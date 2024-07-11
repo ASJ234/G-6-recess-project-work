@@ -108,7 +108,7 @@ public class ServerController {
         if (!fileStorage.read().toString().contains(participantObj.toString())) {
             fileStorage.add(participantObj);
             clientResponse.put("status", true);
-            clientResponse.put("reason", "Participant created successfully awaiting representative approval");
+            clientResponse.put("reason", "Participant created successfully awaiting School Representative approval");
 
             emailAgent.sendParticipantRegistrationRequestEmail(representativeEmail, participantObj.getString("emailAddress"), participantObj.getString("username"));
 
@@ -116,7 +116,7 @@ public class ServerController {
         }
 
         clientResponse.put("status", false);
-        clientResponse.put("reason", "Participant creation failed found an existing participant object");
+        clientResponse.put("reason", "Participant registration failed!!,An existing participant object Found");
 
         return clientResponse;
     }

@@ -145,6 +145,6 @@ public class Serializer {
 
     public static void main (String[] args) {
         Serializer sample = new Serializer(new User());
-        sample.serialize("login frank ogenrwothjimfrank@gmail.com");
+        sample.serialize("login sossy asj@gmail.com");
     }
 }
