@@ -1,1 +1,9 @@
-[]
+[{
+    "regNo": "0001",
+    "firstname": "daniel",
+    "emailAddress": "okello@gmail.com",
+    "dob": "1990-12-18",
+    "imagePath": "jojo.jpg",
+    "username": "okello",
+    "lastname": "james"
+}]
