@@ -22,10 +22,25 @@ public class Server {
                 serverThread.start();
 
             }
+<<<<<<< HEAD
 
+=======
+            // accept incoming connection and create a thread
+
+            // start a thread for continous
+
+
+            // accept client connection
+>>>>>>> 6e134709888d204a57e0f83e1dcb2fc26d51d408
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+<<<<<<< HEAD
+=======
+
+
+
+>>>>>>> 6e134709888d204a57e0f83e1dcb2fc26d51d408
     }
 }

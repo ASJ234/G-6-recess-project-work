@@ -21,7 +21,11 @@ public class ClientController {
             this.user.schoolName = response.getString("schoolName");
             this.user.isStudent = response.getBoolean("isStudent");
             this.user.isAuthenticated = response.getBoolean("isAuthenticated");
+<<<<<<< HEAD
             this.user.output = "[+] Successfully logged in as a " + this.user.username + (this.user.isStudent ? "(Student)" : "(School Representative)");
+=======
+            this.user.output = "[+] Successfully logged in as a " + this.user.username + (this.user.isStudent ? "(student)" : "(representative)");
+>>>>>>> 6e134709888d204a57e0f83e1dcb2fc26d51d408
         } else {
             this.user.output = "[-] " + response.get("reason").toString();
         }

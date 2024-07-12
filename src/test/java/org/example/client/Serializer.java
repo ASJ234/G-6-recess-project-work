@@ -145,6 +145,10 @@ public class Serializer {
 
     public static void main (String[] args) {
         Serializer sample = new Serializer(new User());
+<<<<<<< HEAD
         sample.serialize("login sossy asj@gmail.com");
+=======
+        sample.serialize("login frank ogenrwothjimfrank@gmail.com");
+>>>>>>> 6e134709888d204a57e0f83e1dcb2fc26d51d408
     }
 }

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [{
     "regNo": "0001",
     "firstname": "daniel",
@@ -7,3 +8,133 @@
     "username": "okello",
     "lastname": "james"
 }]
+=======
+[
+    {
+        "regNo": "U0023",
+        "firstname": "john",
+        "emailAddress": "okellogmail.com",
+        "dob": "2000-12-12",
+        "imagePath": "profile.jpg",
+        "username": "james",
+        "lastname": "okello"
+    },
+    {
+        "regNo": "U0038",
+        "firstname": "julius",
+        "emailAddress": "okello@gmail.com",
+        "dob": "2000-12-12",
+        "imagePath": "profile.jpg",
+        "username": "katongole",
+        "lastname": "okello"
+    },
+    {
+        "regNo": "2000-12-12",
+        "firstname": "okello",
+        "emailAddress": "paul@gmail.com",
+        "dob": "0001",
+        "imagePath": "profile.jpg",
+        "username": "saul",
+        "lastname": "paul"
+    },
+    {
+        "regNo": "00001",
+        "firstname": "james",
+        "emailAddress": "lord@gmail.com",
+        "dob": "2000-12-12",
+        "imagePath": "profile.jpg",
+        "username": "ben",
+        "lastname": "lord"
+    },
+    {
+        "regNo": "U0040",
+        "firstname": "john",
+        "emailAddress": "garang@gmail.com",
+        "dob": "2000-12-13",
+        "imagePath": "profile.jpg",
+        "username": "johngarang",
+        "lastname": "garang"
+    },
+    {
+        "regNo": "U3740",
+        "firstname": "okello",
+        "emailAddress": "isaac@gmail.com",
+        "dob": "1998-12-11",
+        "imagePath": "login.jpg",
+        "username": "johndavid",
+        "lastname": "isaac"
+    },
+    {
+        "regNo": "U0038",
+        "firstname": "sabonyo",
+        "emailAddress": "saul@gmail.com",
+        "dob": "2000-12-12",
+        "imagePath": "image.png",
+        "username": "saul",
+        "lastname": "john"
+    },
+    {
+        "regNo": "U0038",
+        "firstname": "sabunyo",
+        "emailAddress": "okello@gmail.com",
+        "dob": "2000-12-12",
+        "imagePath": "image.png",
+        "username": "saul",
+        "lastname": "okello"
+    },
+    {
+        "regNo": "U0038",
+        "firstname": "deo",
+        "emailAddress": "deo@gmail.com",
+        "dob": "1997-12-03",
+        "imagePath": "image.png",
+        "username": "sekiziyivu",
+        "lastname": "sekdeo"
+    },
+    {
+        "regNo": "U3740",
+        "firstname": "omwesigye",
+        "emailAddress": "von@gmail.com",
+        "dob": "2000-12-12",
+        "imagePath": "image.png",
+        "username": "von",
+        "lastname": "john"
+    },
+    {
+        "regNo": "U1234",
+        "firstname": "omwesigye",
+        "emailAddress": "ok@gmail.com",
+        "dob": "1999-12-12",
+        "imagePath": "tyu.png",
+        "username": "von",
+        "lastname": "okello"
+    },
+    {
+        "regNo": "U0038",
+        "firstname": "james",
+        "emailAddress": "john@gmail.com",
+        "dob": "2002-01-12",
+        "imagePath": "web.jpg",
+        "username": "reed",
+        "lastname": "okello"
+    },
+    {
+        "regNo": "0001",
+        "firstname": "john",
+        "emailAddress": "deo@gmail.com",
+        "dob": "2001-11-11",
+        "imagePath": "jojo.jpg",
+        "username": "garang",
+        "lastname": "deo"
+    },
+    {
+        "regNo": "0001",
+        "firstname": "sabunyo",
+        "emailAddress": "saul@gmail.com",
+        "dob": "1997-11-12",
+        "imagePath": "pork.jpg",
+        "username": "saul",
+        "lastname": "eduard"
+    }
+]
+>>>>>>> 6e134709888d204a57e0f83e1dcb2fc26d51d408
