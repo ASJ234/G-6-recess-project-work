@@ -22,12 +22,7 @@ public class Server {
                 serverThread.start();
 
             }
-            // accept incoming connection and create a thread
 
-            // start a thread for continous
-
-
-            // accept client connection
         } catch (Exception e) {
             e.printStackTrace();
         }
