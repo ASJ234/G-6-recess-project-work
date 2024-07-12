@@ -7,8 +7,8 @@ import java.util.Properties;
 
 public class EmailSending {
     String host = "smtp.gmail.com";
-    String username = "eelection3.portal@gmail.com";
-    String from = "eelection3.portal@gmail.com";
+    String username = "G-6-recess-project.portal@gmail.com";
+    String from = "G-6-recess-project.portal@gmail.com";
     String password = "mngv mtyl wmzk exmi";
     Session session;
 
@@ -33,7 +33,7 @@ public class EmailSending {
 
         message.setFrom(new InternetAddress(this.from));
         message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
-        message.setSubject("Notification of registration under your school");
+        message.setSubject("Notification of Participant registration under your school");
 
         StringBuilder emailMessage = new StringBuilder();
         emailMessage.append("New participant notification\n\n");
@@ -41,15 +41,11 @@ public class EmailSending {
         emailMessage.append("The participant details are as below\n");
         emailMessage.append("\tUsername: ").append(username).append("\n");
         emailMessage.append("\temail: ").append(participantEmail).append("\n");
-        emailMessage.append("\nTo verify this participant please login into the command line and confirm with the commands\n");
+        emailMessage.append("\nTo verify this participant please login into the command line interface and confirm the participants with the commands below\n");
         emailMessage.append("\tconfirm with:-> confirm yes/no " + username + "\n");
 
         message.setText(emailMessage.toString());
         Transport.send(message);
     }
 
-//    public static void main(String[] args) throws MessagingException {
-//        EmailSending email = new EmailSending();
-//        email.sendParticipantRegistrationRequestEmail("ogenrwothjimfrank@gmail.com", "frank@gmail.com", "frank");
-//    }
 }
