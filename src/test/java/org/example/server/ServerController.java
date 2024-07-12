@@ -10,32 +10,37 @@ import java.sql.SQLException;
 public class ServerController {
     JSONObject obj;
 
+    // Constructor to initialize ServerController with JSONObject
     public ServerController(JSONObject obj) {
         this.obj = obj;
     }
 
+    // Method to handle login logic
     private JSONObject login(JSONObject obj) throws SQLException, ClassNotFoundException {
-        // logic to log in a student this can work with isAuthenticated == false only (!isAuthenticated)
+        // Initialize database connection
         DatabaseConnection dbConnection = new DatabaseConnection();
 
+        // Extract username and email from tokens
         JSONArray tokens = obj.getJSONArray("tokens");
-
         String username = tokens.get(1).toString();
         String email = tokens.get(2).toString();
 
+        // Prepare client response JSON object
         JSONObject clientResponse = new JSONObject();
         clientResponse.put("command", "login");
         clientResponse.put("username", username);
         clientResponse.put("email", email);
 
+        // Query participant table for matching username and email
         String readParticipantQuery = "SELECT * FROM participant";
         ResultSet participantResultSet = dbConnection.read(readParticipantQuery);
         while (participantResultSet.next()) {
-            if (username.equals(participantResultSet.getString("username")) && email.equals(participantResultSet.getString("emailAddress"))) {
-                // there is a match here
-
+            if (username.equals(participantResultSet.getString("username")) &&
+                    email.equals(participantResultSet.getString("emailAddress"))) {
+                // Matching participant found
                 String regNo = participantResultSet.getString("regNo");
 
+                // Populate client response for participant
                 clientResponse.put("participant_id", participantResultSet.getInt("participant_id"));
                 clientResponse.put("regNo", regNo);
                 clientResponse.put("schoolName", "undefined");
@@ -47,15 +52,17 @@ public class ServerController {
             }
         }
 
+        // Query school table for matching representative username and email
         String readRepresentativeQuery = "SELECT * FROM school";
         ResultSet representativeResultSet = dbConnection.read(readRepresentativeQuery);
         while (representativeResultSet.next()) {
-            if (username.equals(representativeResultSet.getString("representativeName")) && email.equals(representativeResultSet.getString("representativeEmail"))) {
-                // there is a match
-
+            if (username.equals(representativeResultSet.getString("representativeName")) &&
+                    email.equals(representativeResultSet.getString("representativeEmail"))) {
+                // Matching representative found
                 String schoolName = representativeResultSet.getString("name");
                 String regNo = representativeResultSet.getString("regNo");
 
+                // Populate client response for representative
                 clientResponse.put("participant_id", 0);
                 clientResponse.put("schoolName", schoolName);
                 clientResponse.put("regNo", regNo);
@@ -67,19 +74,22 @@ public class ServerController {
             }
         }
 
+        // No matching credentials found
         clientResponse.put("isStudent", false);
         clientResponse.put("isAuthenticated", false);
         clientResponse.put("status", false);
-        clientResponse.put("reason", "Invalid credentials. check the details provided");
+        clientResponse.put("reason", "Invalid credentials. Check the details provided");
 
         return clientResponse;
     }
 
+    // Method to handle student registration logic
     private JSONObject register(JSONObject obj) throws IOException, MessagingException, SQLException, ClassNotFoundException {
-        // logic to register student this can work with isAuthenticated == false only (!isAuthenticated)
+        // Initialize email agent and database connection
         EmailSending emailAgent = new EmailSending();
         DatabaseConnection dbConnection = new DatabaseConnection();
 
+        // Extract registration details from tokens
         JSONArray tokens = obj.getJSONArray("tokens");
         JSONObject participantObj = new JSONObject();
         participantObj.put("username", tokens.get(1));
@@ -90,56 +100,58 @@ public class ServerController {
         participantObj.put("regNo", tokens.get(6));
         participantObj.put("imagePath", tokens.get(7));
 
+        // Prepare client response JSON object
         JSONObject clientResponse = new JSONObject();
         clientResponse.put("command", "register");
 
+        // Query representative table to get representative email
         ResultSet rs = dbConnection.getRepresentative(participantObj.getString("regNo"));
         String representativeEmail;
         if (rs.next()) {
             representativeEmail = rs.getString("representativeEmail");
         } else {
+            // If no representative found for given regNo
             clientResponse.put("status", false);
-            clientResponse.put("reason", "school does not exist in our database");
+            clientResponse.put("reason", "School does not exist in our database");
 
             return clientResponse;
         }
 
+        // Initialize file storage for participants
         FileStorage fileStorage = new FileStorage("participants.json");
         if (!fileStorage.read().toString().contains(participantObj.toString())) {
+            // Add participant if not already exists
             fileStorage.add(participantObj);
             clientResponse.put("status", true);
-<<<<<<< HEAD
-            clientResponse.put("reason", "Participant created successfully awaiting School Representative approval");
-=======
             clientResponse.put("reason", "Participant created successfully awaiting representative approval");
->>>>>>> 6e134709888d204a57e0f83e1dcb2fc26d51d408
-
+            // Send registration request email to representative
             emailAgent.sendParticipantRegistrationRequestEmail(representativeEmail, participantObj.getString("emailAddress"), participantObj.getString("username"));
 
             return clientResponse;
         }
 
+        // Participant already exists
         clientResponse.put("status", false);
-<<<<<<< HEAD
-        clientResponse.put("reason", "Participant registration failed!!,An existing participant object Found");
-=======
-        clientResponse.put("reason", "Participant creation failed found an existing participant object");
->>>>>>> 6e134709888d204a57e0f83e1dcb2fc26d51d408
+        clientResponse.put("reason", "Participant creation failed. An existing participant object found");
 
         return clientResponse;
     }
 
+    // Method to handle attempting a challenge
     private JSONObject attemptChallenge(JSONObject obj) throws SQLException, ClassNotFoundException {
-        // logic to attempt a challenge respond with the random questions if user is eligible (student, isAuthenticated)
+        // Prepare client response JSON object
         JSONObject clientResponse = new JSONObject();
         JSONArray questions = new JSONArray();
 
+        // Initialize database connection
         DatabaseConnection dbConnection = new DatabaseConnection();
 
+        // Extract challengeId from tokens
         int challengeId = Integer.parseInt((String) new JSONArray(obj.get("tokens").toString()).get(1));
         ResultSet challengeQuestions;
         challengeQuestions = dbConnection.getChallengeQuestions(challengeId);
 
+        // Iterate through challenge questions and add to client response
         while (challengeQuestions.next()) {
             JSONObject question = new JSONObject();
             question.put("id", challengeQuestions.getString("question_id"));
@@ -149,6 +161,7 @@ public class ServerController {
             questions.put(question);
         }
 
+        // Populate client response with challenge details
         clientResponse.put("command", "attemptChallenge");
         clientResponse.put("questions", questions);
         clientResponse.put("challenge_id", challengeId);
@@ -156,13 +169,19 @@ public class ServerController {
         return clientResponse;
     }
 
+    // Method to view available challenges
     private JSONObject viewChallenges(JSONObject obj) throws SQLException, ClassNotFoundException {
+        // Prepare client response JSON object
         JSONObject clientResponse = new JSONObject();
 
+        // Initialize database connection
         DatabaseConnection dbConnection = new DatabaseConnection();
+
+        // Retrieve available challenges from database
         ResultSet availableChallenges = dbConnection.getChallenges();
         JSONArray challenges = new JSONArray();
 
+        // Iterate through available challenges and add to client response
         while (availableChallenges.next()) {
             JSONObject challenge = new JSONObject();
             challenge.put("id", availableChallenges.getInt("challenge_id"));
@@ -175,49 +194,68 @@ public class ServerController {
             challenges.put(challenge);
         }
 
+        // Populate client response with challenges
         clientResponse.put("command", "viewChallenges");
         clientResponse.put("challenges", challenges.toString());
 
         return clientResponse;
     }
 
+    // Method to confirm or reject registered participants
     private JSONObject confirm(JSONObject obj) throws IOException, SQLException, ClassNotFoundException {
-        // logic to confirm registered students (representatives, isAuthenticated)
+        // Initialize file storage for participants
         FileStorage fileStorage = new FileStorage("participants.json");
 
+        // Extract username from object
         String username = obj.getString("username");
         JSONObject participant = fileStorage.readEntryByUserName(username);
+
+        // Prepare client response JSON object
         JSONObject clientResponse = new JSONObject();
         clientResponse.put("command", "confirm");
 
+        // Check if participant exists
         if (participant.isEmpty()) {
             clientResponse.put("status", false);
-            clientResponse.put("reason", "Invalid command check the username provided");
+            clientResponse.put("reason", "Invalid command. Check the username provided");
             return clientResponse;
         }
 
+        // Initialize database connection
         DatabaseConnection dbConnection = new DatabaseConnection();
+
+        // Confirm or reject participant based on 'confirm' flag
         if (obj.getBoolean("confirm")) {
-            dbConnection.createParticipant(participant.getString("username"), participant.getString("firstname"), participant.getString("lastname"), participant.getString("emailAddress"), participant.getString("dob"), participant.getString("regNo"), participant.getString("imagePath"));
+            dbConnection.createParticipant(participant.getString("username"), participant.getString("firstname"),
+                    participant.getString("lastname"), participant.getString("emailAddress"),
+                    participant.getString("dob"), participant.getString("regNo"), participant.getString("imagePath"));
             fileStorage.deleteEntryByUserName(username);
-            clientResponse.put("reason", participant.getString("firstname") + " " + participant.getString("firstname") + " " + participant.getString("emailAddress") + " confirmed successfully");
+            clientResponse.put("reason", participant.getString("firstname") + " " + participant.getString("lastname") +
+                    " (" + participant.getString("emailAddress") + ") confirmed successfully");
         } else {
-            dbConnection.createParticipantRejected(participant.getString("username"), participant.getString("firstname"), participant.getString("lastname"), participant.getString("emailAddress"), participant.getString("dob"), participant.getString("regNo"), participant.getString("imagePath"));
+            dbConnection.createParticipantRejected(participant.getString("username"), participant.getString("firstname"),
+                    participant.getString("lastname"), participant.getString("emailAddress"),
+                    participant.getString("dob"), participant.getString("regNo"), participant.getString("imagePath"));
             fileStorage.deleteEntryByUserName(username);
-            clientResponse.put("reason", participant.getString("firstname") + " " + participant.getString("firstname") + " " + participant.getString("emailAddress") + " rejected successfully");
+            clientResponse.put("reason", participant.getString("firstname") + " " + participant.getString("lastname") +
+                    " (" + participant.getString("emailAddress") + ") rejected successfully");
         }
         clientResponse.put("status", true);
         return clientResponse;
     }
 
+    // Method to view applicants based on school's registration number
     private JSONObject viewApplicants(JSONObject obj) throws IOException {
-        // logic to confirm registered students (representatives, isAuthenticated)
+        // Extract registration number from object
         String regNo = obj.getString("regNo");
 
+        // Initialize file storage for participants
         FileStorage fileStorage = new FileStorage("participants.json");
 
+        // Filter participants by registration number
         String participants = fileStorage.filterParticipantsByRegNo(regNo);
 
+        // Prepare client response JSON object
         JSONObject clientResponse = new JSONObject();
         clientResponse.put("command", "viewApplicants");
         clientResponse.put("applicants", participants);
@@ -225,52 +263,60 @@ public class ServerController {
         return clientResponse;
     }
 
+    // Method to handle challenge attempt
     public JSONObject attempt(JSONObject obj) throws SQLException, ClassNotFoundException {
+        // Extract attempt details from object
         JSONArray attempt = obj.getJSONArray("attempt");
+
+        // Initialize database connection
         DatabaseConnection dbConnection = new DatabaseConnection();
 
+        // Prepare attempt evaluation JSON object
         JSONObject attemptEvaluation = new JSONObject();
         attemptEvaluation.put("score", dbConnection.getAttemptScore(attempt));
         attemptEvaluation.put("participant_id", obj.getInt("participant_id"));
         attemptEvaluation.put("challenge_id", obj.getInt("challenge_id"));
         attemptEvaluation.put("total_score", obj.getInt("total_score"));
 
+        // Create challenge attempt in database
         dbConnection.createChallengeAttempt(attemptEvaluation);
 
         return new JSONObject();
     }
 
+    // Main method to run appropriate logic based on command received
     public JSONObject run() throws IOException, SQLException, ClassNotFoundException, MessagingException {
         switch (this.obj.get("command").toString()) {
             case "login":
-                // call login logic
+                // Call login logic
                 return this.login(this.obj);
 
             case "register":
-                // call login logic
+                // Call registration logic
                 return this.register(this.obj);
 
             case "viewChallenges":
-                // call login logic
+                // Call view challenges logic
                 return this.viewChallenges(this.obj);
 
             case "attemptChallenge":
-                // call login logic
+                // Call attempt challenge logic
                 return this.attemptChallenge(this.obj);
 
             case "confirm":
-                // call login logic
+                // Call confirmation logic
                 return this.confirm(this.obj);
 
             case "viewApplicants":
+                // Call view applicants logic
                 return this.viewApplicants(this.obj);
 
             case "attempt":
-                // handle attempts here
+                // Call attempt logic
                 return this.attempt(this.obj);
 
             default:
-                // command unresolved
+                // Unrecognized command
                 JSONObject outputObj = new JSONObject();
                 outputObj.put("command", "exception");
                 outputObj.put("reason", "Invalid command");

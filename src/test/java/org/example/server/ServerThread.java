@@ -7,28 +7,28 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.*;
+import java.net.Socket;
 import java.sql.SQLException;
 import java.util.regex.Pattern;
 
-
 public class ServerThread {
     private Socket socket;
-    // server thread properties
 
+    // Constructor to initialize ServerThread with a socket
     public ServerThread(Socket socket) {
         this.socket = socket;
-        // define constructor for the Server thread
     }
 
+    // Method to read JSON input from client
     public JSONObject readUserInput(BufferedReader input) throws IOException {
         String clientInput;
         StringBuilder clientIn = new StringBuilder();
 
+        // Regular expression to match JSON format
         String regex = "^\\{.*\\}$";
         Pattern pattern = Pattern.compile(regex);
 
-        // iterate until the end of the json data
+        // Read input line by line until JSON format is detected
         while ((clientInput = input.readLine()) != null) {
             if (pattern.matcher(clientInput).matches()) {
                 clientIn.append(clientInput);
@@ -36,35 +36,39 @@ public class ServerThread {
             }
             clientIn.append(clientInput);
 
+            // Break loop when end of JSON object is detected
             if (clientInput.equals("}")) {
                 break;
             }
         }
 
-        // load data into a json format
+        // Parse JSON data into a JSONObject
         JSONObject jsonObject = new JSONObject(clientIn.toString().strip());
         return jsonObject;
     }
 
+    // Method to start processing client requests
     public void start() throws IOException, MessagingException {
-
         System.out.println("Thread started");
 
         try (
+                // Initialize input and output streams for communication with client
                 BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 PrintWriter output = new PrintWriter(socket.getOutputStream(), true)
         ){
 
-            // read user input
             JSONObject clientRequest;
+            // Continuously read and process client requests
             while ((clientRequest = this.readUserInput(input)) != null) {
-                System.out.println("The command received" + " - - " + clientRequest.toString());
+                System.out.println("Command received: " + clientRequest.toString());
 
-                ServerController exec = new ServerController(clientRequest);
+                // Create a ServerController instance to handle client request
+                ServerController controller = new ServerController(clientRequest);
 
-                String response = exec.run().toString();
+                // Execute client request and get response
+                String response = controller.run().toString();
 
-                // send content back to client
+                // Send response back to client
                 output.println(response);
             }
 
@@ -72,9 +76,8 @@ public class ServerThread {
             e.printStackTrace();
             throw new RuntimeException(e);
         } finally {
+            // Close socket when done
             socket.close();
         }
-
-        // start a thread for communicating with the client continously
     }
 }

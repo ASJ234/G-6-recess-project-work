@@ -6,14 +6,16 @@ import org.json.JSONObject;
 public class ClientController {
     User user;
 
-
+    // Constructor to initialize the ClientController with a User object
     public ClientController(User user) {
         this.user = user;
     }
 
+    // Method to handle login logic based on server response
     private User login(JSONObject response) {
-        // logic to interpret server response in attempt to login
+        // If the login is successful
         if (response.getBoolean("status")) {
+            // Update user attributes based on the response
             this.user.id = response.getInt("participant_id");
             this.user.username = response.getString("username");
             this.user.email = response.getString("email");
@@ -21,38 +23,42 @@ public class ClientController {
             this.user.schoolName = response.getString("schoolName");
             this.user.isStudent = response.getBoolean("isStudent");
             this.user.isAuthenticated = response.getBoolean("isAuthenticated");
-<<<<<<< HEAD
+
+            // Set a success message for the user
             this.user.output = "[+] Successfully logged in as a " + this.user.username + (this.user.isStudent ? "(Student)" : "(School Representative)");
-=======
-            this.user.output = "[+] Successfully logged in as a " + this.user.username + (this.user.isStudent ? "(student)" : "(representative)");
->>>>>>> 6e134709888d204a57e0f83e1dcb2fc26d51d408
         } else {
+            // Set a failure message for the user
             this.user.output = "[-] " + response.get("reason").toString();
         }
         return this.user;
     }
 
+    // Method to handle registration logic based on server response
     private User register(JSONObject response) {
-        // logic to interpret server response in attempt to register
+        // If the registration is successful
         if (response.getBoolean("status")) {
+            // Set a success message for the user
             this.user.output = "[+] " + response.get("reason").toString();
         } else {
+            // Set a failure message for the user
             this.user.output = "[-] " + response.get("reason").toString();
         }
         return this.user;
     }
 
+    // Method to handle challenge attempt logic based on server response
     private User attemptChallenge(JSONObject response) {
-        // logic to interpret server response in attempt to attempt challenge
+        // Get the list of questions from the response
         JSONArray questions = response.getJSONArray("questions");
 
+        // If there are no questions available
         if (questions.isEmpty()) {
             this.user.output = "[-] No available questions in this challenge right now";
             return this.user;
         }
 
+        // Build a string to display the questions
         StringBuilder stringBuilder = new StringBuilder();
-
         stringBuilder.append("\nQUESTIONS \n\n");
         for (int i = 0; i < questions.length(); i++) {
             JSONObject question = new JSONObject(((JSONObject) questions.get(i)).toString(4));
@@ -64,17 +70,19 @@ public class ClientController {
         return this.user;
     }
 
+    // Method to handle viewing of challenges based on server response
     private User viewChallenges(JSONObject response) {
-        // logic to interpret server response in attempt to view challenges
+        // Get the list of challenges from the response
         JSONArray challenges = new JSONArray(response.getString("challenges"));
 
+        // If there are no challenges available
         if (challenges.isEmpty()) {
             this.user.output = "[-] No open challenges are available right now";
             return this.user;
         }
 
+        // Build a string to display the challenges
         StringBuilder stringBuilder = new StringBuilder();
-
         stringBuilder.append("\nCHALLENGES \n\n");
         for (int i = 0; i < challenges.length(); i++) {
             JSONObject challenge = new JSONObject(((JSONObject) challenges.get(i)).toString(4));
@@ -88,30 +96,28 @@ public class ClientController {
         return this.user;
     }
 
+    // Method to handle confirmation logic based on server response
     private User confirm(JSONObject response) {
-        // logic to interpret server response in attempt to confirm
-        if (response.getBoolean("status")) {
-            this.user.output = response.getString("reason");
-        } else {
-            this.user.output = response.getString("reason");
-        }
+        // Set the output message based on the response status
+        this.user.output = response.getString("reason");
         return this.user;
     }
 
+    // Method to handle viewing of applicants based on server response
     private User viewApplicants(JSONObject response) {
-        // logic to interpret server response in attempt to view applicants
+        // Get the list of applicants from the response
         JSONArray participants = new JSONArray(response.getString("applicants"));
 
+        // If there are no applicants available
         if (participants.isEmpty()) {
             this.user.output = "[-] No pending participant registration requests";
             return this.user;
         }
 
+        // Build a string to display the applicants
         StringBuilder stringBuilder = new StringBuilder();
-
         stringBuilder.append(this.user.schoolName.strip().toUpperCase() + " (registration number: " + this.user.regNo + ")\n");
-        stringBuilder.append("\n");
-        stringBuilder.append("Pending applicants:\n");
+        stringBuilder.append("\nPending applicants:\n");
 
         int count = 1;
         for (int i = 0; i < participants.length(); i++) {
@@ -120,8 +126,7 @@ public class ClientController {
             count++;
         }
 
-        stringBuilder.append("\n");
-        stringBuilder.append("Confirm a student using the commands\n");
+        stringBuilder.append("\nConfirm a student using the commands\n");
         stringBuilder.append(" - confirm yes <username>\n");
         stringBuilder.append(" - confirm no <username>\n");
 
@@ -130,6 +135,7 @@ public class ClientController {
         return this.user;
     }
 
+    // Main method to execute the appropriate action based on the command in the response data
     public User exec(String responseData) {
         JSONObject response = new JSONObject(responseData);
         switch (response.get("command").toString()) {
