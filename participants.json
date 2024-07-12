@@ -1,15 +1,13 @@
-<<<<<<< HEAD
-[{
-    "regNo": "0001",
-    "firstname": "daniel",
-    "emailAddress": "okello@gmail.com",
-    "dob": "1990-12-18",
-    "imagePath": "jojo.jpg",
-    "username": "okello",
-    "lastname": "james"
-}]
-=======
 [
+    {
+        "regNo": "0001",
+        "firstname": "daniel",
+        "emailAddress": "okello@gmail.com",
+        "dob": "1990-12-18",
+        "imagePath": "jojo.jpg",
+        "username": "okello",
+        "lastname": "james"
+    },
     {
         "regNo": "U0023",
         "firstname": "john",
@@ -135,6 +133,23 @@
         "imagePath": "pork.jpg",
         "username": "saul",
         "lastname": "eduard"
+    },
+    {
+        "regNo": "0001",
+        "firstname": "ojambo",
+        "emailAddress": "ojambo@gail.com",
+        "dob": "1999-10-17",
+        "imagePath": "bobo.jpg",
+        "username": "eduard",
+        "lastname": "davis"
+    },
+    {
+        "regNo": "0001",
+        "firstname": "allan",
+        "emailAddress": "daudi@gail.com",
+        "dob": "1999-10-17",
+        "imagePath": "bobo.jpg",
+        "username": "katongole",
+        "lastname": "julius"
     }
 ]
->>>>>>> 6e134709888d204a57e0f83e1dcb2fc26d51d408
