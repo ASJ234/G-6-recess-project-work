@@ -80,6 +80,10 @@ public class ClientInstance {
             this.clientId = (String) socket.getInetAddress().getHostAddress();
             Serializer serializer = new Serializer(this.user);
 
+            System.out.println();
+            System.out.print("-------------------COMMANDS TO BE ENTERED---------------------------");
+            System.out.println("\nregister username firstname lastname email_address d0b(yyyy-mm-dd) RegNo image_path" + "\nlogin\nviewApplicants(confirm yes <username>/confirm no <username>)\nviewChallenges\nattemptChallenges(attemptChallenge <challengeNo>)\nlogout");
+
             // Prompt user for a command
             System.out.print("[Enter the command] (" + this.user.username + "): ");
 

@@ -102,7 +102,7 @@ public class Serializer {
     // Method to handle logout process
     public String logout() {
         this.user.logout();
-        return "Successfully logged out";
+        return "You have Successfully logged out";
     }
 
     // Method to serialize commands and execute appropriate actions

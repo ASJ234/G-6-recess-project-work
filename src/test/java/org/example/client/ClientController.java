@@ -53,7 +53,7 @@ public class ClientController {
 
         // If there are no questions available
         if (questions.isEmpty()) {
-            this.user.output = "[-] No available questions in this challenge right now";
+            this.user.output = "[-] There are no available questions in this challenge right now";
             return this.user;
         }
 
@@ -77,7 +77,7 @@ public class ClientController {
 
         // If there are no challenges available
         if (challenges.isEmpty()) {
-            this.user.output = "[-] No open challenges are available right now";
+            this.user.output = "[-] There are no open challenges available right now";
             return this.user;
         }
 
@@ -110,14 +110,14 @@ public class ClientController {
 
         // If there are no applicants available
         if (participants.isEmpty()) {
-            this.user.output = "[-] No pending participant registration requests";
+            this.user.output = "[-] There are no Applicants awaiting the School representative's confirmation.";
             return this.user;
         }
 
         // Build a string to display the applicants
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(this.user.schoolName.strip().toUpperCase() + " (registration number: " + this.user.regNo + ")\n");
-        stringBuilder.append("\nPending applicants:\n");
+        stringBuilder.append("\nA list of Applicants awaiting your confirmation.\n");
 
         int count = 1;
         for (int i = 0; i < participants.length(); i++) {
@@ -126,7 +126,7 @@ public class ClientController {
             count++;
         }
 
-        stringBuilder.append("\nConfirm a student using the commands\n");
+        stringBuilder.append("\nConfirm a participant using the commands below.\n");
         stringBuilder.append(" - confirm yes <username>\n");
         stringBuilder.append(" - confirm no <username>\n");
 
@@ -139,25 +139,25 @@ public class ClientController {
     public User exec(String responseData) {
         JSONObject response = new JSONObject(responseData);
         switch (response.get("command").toString()) {
-            case "login" -> {
+            case "login":
                 return this.login(response);
-            }
-            case "register" -> {
+
+            case "register":
                 return this.register(response);
-            }
-            case "attemptChallenge" -> {
+
+            case "attemptChallenge":
                 return this.attemptChallenge(response);
-            }
-            case "viewChallenges" -> {
+
+            case "viewChallenges":
                 return this.viewChallenges(response);
-            }
-            case "confirm" -> {
+
+            case "confirm":
                 return this.confirm(response);
-            }
-            case "viewApplicants" -> {
+
+            case "viewApplicants":
                 return this.viewApplicants(response);
-            }
-            default -> throw new IllegalStateException("Invalid response");
+
+            default:throw new IllegalStateException("Invalid response");
         }
     }
 }
