@@ -19,7 +19,7 @@ public class Serializer {
 
         // Collect user login details
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Please enter user login details (username and email)");
+        System.out.println("Please enter user login details.");
         System.out.print("Username: ");
         String username = scanner.nextLine();
         System.out.print("Email: ");
@@ -70,7 +70,7 @@ public class Serializer {
         obj.put("command", "viewApplicants");
         obj.put("isAuthenticated", this.user.isAuthenticated);
         obj.put("isStudent", this.user.isStudent);
-        obj.put("regNo", this.user.regNo);
+        obj.put("registration_number", this.user.registration_number);
 
         return obj.toString(4);
     }
@@ -81,7 +81,7 @@ public class Serializer {
         JSONObject obj = new JSONObject();
         obj.put("command", "confirm");
         obj.put("username", arr[2]);
-        obj.put("regNo", this.user.regNo);
+        obj.put("registration_number", this.user.registration_number);
         obj.put("confirm", (arr[1].toLowerCase().equals("yes")) ? true : false);
         obj.put("tokens", arr);
 

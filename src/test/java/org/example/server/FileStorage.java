@@ -67,12 +67,12 @@ public class FileStorage {
     }
 
     // Method to filter JSON object entries by registration number and return as a JSON string
-    public String filterParticipantsByRegNo(String regNo) {
+    public String filterParticipantsByRegNo(String registration_number) {
         JSONArray jsonArray = this.read(); // Read all entries from the file into a JSONArray
         JSONArray output = new JSONArray(); // Initialize an empty JSONArray to store filtered entries
         for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject jsonObject = jsonArray.getJSONObject(i);
-            if (jsonObject.getString("regNo").equals(regNo)) {
+            if (jsonObject.getString("registration_number").equals(registration_number)) {
                 output.put(jsonObject); // Add matching entries to the output JSONArray
             }
         }

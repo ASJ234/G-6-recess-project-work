@@ -7,7 +7,7 @@ import java.sql.*;
 
 public class DatabaseConnection {
     // Database connection parameters
-    String url = "jdbc:mysql://localhost:3306/mtc_challenge_competition";
+    String url = "jdbc:mysql://localhost:3306/mtc_challenge_comp";
     String username = "root";
     String password = "";
     Connection connection;
@@ -50,30 +50,30 @@ public class DatabaseConnection {
     }
 
     // Method to create a participant entry in the database
-    public void createParticipant(String username, String firstname, String lastname, String emailAddress, String dob, String regNo, String imagePath) throws SQLException {
-        String sql = "INSERT INTO `participant` (`username`, `firstname`, `lastname`, `emailAddress`, `dob`, `regNo`, `imagePath`) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    public void createParticipant(String username, String firstname, String lastname, String emailAddress, String dob, String registration_number, String imagePath) throws SQLException {
+        String sql = "INSERT INTO `participant` (`username`, `firstname`, `lastname`, `emailAddress`, `dob`, `registration_number`, `imagePath`) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = this.connection.prepareStatement(sql)) {
             stmt.setString(1, username);
             stmt.setString(2, firstname);
             stmt.setString(3, lastname);
             stmt.setString(4, emailAddress);
             stmt.setString(5, dob);
-            stmt.setString(6, regNo);
+            stmt.setString(6, registration_number);
             stmt.setString(7, imagePath);
             stmt.executeUpdate();
         }
     }
 
     // Method to create a rejected participant entry in the database
-    public void createParticipantRejected(String username, String firstname, String lastname, String emailAddress, String dob, String regNo, String imagePath) throws SQLException {
-        String sql = "INSERT INTO `rejectedparticipant` (`username`, `firstname`, `lastname`, `emailAddress`, `dob`, `regNo`, `imagePath`) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    public void createParticipantRejected(String username, String firstname, String lastname, String emailAddress, String dob, String registration_number, String imagePath) throws SQLException {
+        String sql = "INSERT INTO `rejectedparticipant` (`username`, `firstname`, `lastname`, `emailAddress`, `dob`, `registration_number`, `imagePath`) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = this.connection.prepareStatement(sql)) {
             stmt.setString(1, username);
             stmt.setString(2, firstname);
             stmt.setString(3, lastname);
             stmt.setString(4, emailAddress);
             stmt.setString(5, dob);
-            stmt.setString(6, regNo);
+            stmt.setString(6, registration_number);
             stmt.setString(7, imagePath);
             stmt.executeUpdate();
         }
@@ -81,13 +81,13 @@ public class DatabaseConnection {
 
     // Method to retrieve challenges from the database
     public ResultSet getChallenges() throws SQLException {
-        String sql = "SELECT * FROM `mtc_challenge_competition`.`challenge` WHERE `starting_date` <= CURRENT_DATE AND `closing_date` >= CURRENT_DATE;";
+        String sql = "SELECT * FROM `mtc_challenge_comp`.`challenge` WHERE `starting_date` <= CURRENT_DATE AND `closing_date` >= CURRENT_DATE;";
         return this.statement.executeQuery(sql);
     }
 
     // Method to retrieve challenge questions from the database by challenge_id
     public ResultSet getChallengeQuestions(int challenge_id) throws SQLException {
-        String sql = "SELECT qar.* FROM `mtc_challenge_competition`.`question_answer_record` qar JOIN `mtc_challenge_competition`.`challenge_question_answer_record` cqar ON qar.question_id = cqar.question_id WHERE cqar.challenge_id = ?";
+        String sql = "SELECT qar.* FROM `mtc_challenge_comp`.`question_answer_record` qar JOIN `mtc_challenge_comp`.`challenge_question_answer_record` cqar ON qar.question_id = cqar.question_id WHERE cqar.challenge_id = ?";
         PreparedStatement preparedStatement = this.connection.prepareStatement(sql);
         preparedStatement.setInt(1, challenge_id);
         return preparedStatement.executeQuery();
@@ -129,8 +129,8 @@ public class DatabaseConnection {
     }
 
     // Method to retrieve representative details from the database by regNo
-    public ResultSet getRepresentative(String regNo) throws SQLException {
-        String sqlCommand = "SELECT * FROM `school` WHERE regNo = " + regNo + ";";
+    public ResultSet getRepresentative(String registration_number) throws SQLException {
+        String sqlCommand = "SELECT * FROM `schools` WHERE registration_number = " + registration_number + ";";
         return this.statement.executeQuery(sqlCommand);
     }
 }

@@ -56,7 +56,7 @@ public class ClientInstance {
 
             // Collect answer from user
             answer.put("question_id", question.getInt("id"));
-            System.out.print(" - ");
+            System.out.print(" = ");
             answer.put("answer", scanner.nextLine());
 
             // Add answer to solutions array
@@ -82,7 +82,9 @@ public class ClientInstance {
 
             System.out.println();
             System.out.print("-------------------COMMANDS TO BE ENTERED---------------------------");
-            System.out.println("\nregister username firstname lastname email_address d0b(yyyy-mm-dd) RegNo image_path" + "\nlogin\nviewApplicants(confirm yes <username>/confirm no <username>)\nviewChallenges\nattemptChallenges(attemptChallenge <challengeNo>)\nlogout");
+            System.out.println("\nregister username firstname lastname email_address d0b(yyyy-mm-dd) RegNo image_path" +
+                    "\nlogin\nviewApplicants(confirm yes <username>/confirm no <username>)\nviewChallenges\nattemptChallenges(attemptChallenge <challengeNo>)\nlogout");
+            System.out.println("--------------------------------------------------------------------------");
 
             // Prompt user for a command
             System.out.print("[Enter the command] (" + this.user.username + "): ");
@@ -96,7 +98,7 @@ public class ClientInstance {
             while ((userInput = consoleInput.readLine()) != null) {
                 // Handle logout command
                 if (userInput.equals("logout") && (this.user.isAuthenticated)) {
-                    System.out.println("Session successfully logged out");
+                    System.out.println("✓✓ Session successfully logged out");
                     this.user.logout();
                     System.out.print("[Enter the command] (" + (!this.user.username.isBlank() ? this.user.username : null) + "): ");
                     continue;

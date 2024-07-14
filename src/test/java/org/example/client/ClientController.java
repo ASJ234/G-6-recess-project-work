@@ -19,16 +19,16 @@ public class ClientController {
             this.user.id = response.getInt("participant_id");
             this.user.username = response.getString("username");
             this.user.email = response.getString("email");
-            this.user.regNo = response.getString("regNo");
+            this.user.registration_number = response.getString("registration_number");
             this.user.schoolName = response.getString("schoolName");
             this.user.isStudent = response.getBoolean("isStudent");
             this.user.isAuthenticated = response.getBoolean("isAuthenticated");
 
             // Set a success message for the user
-            this.user.output = "[+] Successfully logged in as a " + this.user.username + (this.user.isStudent ? "(Student)" : "(School Representative)");
+            this.user.output = "✓✓ Successfully logged in as a " + this.user.username + (this.user.isStudent ? "(Student)" : "(School Representative)");
         } else {
             // Set a failure message for the user
-            this.user.output = "[-] " + response.get("reason").toString();
+            this.user.output = "!! " + response.get("reason").toString();
         }
         return this.user;
     }
@@ -38,10 +38,10 @@ public class ClientController {
         // If the registration is successful
         if (response.getBoolean("status")) {
             // Set a success message for the user
-            this.user.output = "[+] " + response.get("reason").toString();
+            this.user.output = "✓✓ " + response.get("reason").toString();
         } else {
             // Set a failure message for the user
-            this.user.output = "[-] " + response.get("reason").toString();
+            this.user.output = "!! " + response.get("reason").toString();
         }
         return this.user;
     }
@@ -53,7 +53,7 @@ public class ClientController {
 
         // If there are no questions available
         if (questions.isEmpty()) {
-            this.user.output = "[-] There are no available questions in this challenge right now";
+            this.user.output = "!! There are no available questions in this challenge right now";
             return this.user;
         }
 
@@ -77,7 +77,7 @@ public class ClientController {
 
         // If there are no challenges available
         if (challenges.isEmpty()) {
-            this.user.output = "[-] There are no open challenges available right now";
+            this.user.output = "!! There are no open challenges available right now";
             return this.user;
         }
 
@@ -110,13 +110,13 @@ public class ClientController {
 
         // If there are no applicants available
         if (participants.isEmpty()) {
-            this.user.output = "[-] There are no Applicants awaiting the School representative's confirmation.";
+            this.user.output = "!! There are no Applicants awaiting the School representative's confirmation.";
             return this.user;
         }
 
         // Build a string to display the applicants
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(this.user.schoolName.strip().toUpperCase() + " (registration number: " + this.user.regNo + ")\n");
+        stringBuilder.append(this.user.schoolName.strip().toUpperCase() + " (registration_number: " + this.user.registration_number + ")\n");
         stringBuilder.append("\nA list of Applicants awaiting your confirmation.\n");
 
         int count = 1;
