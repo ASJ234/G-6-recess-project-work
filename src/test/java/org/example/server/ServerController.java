@@ -118,7 +118,7 @@ public class ServerController {
         }
 
         // Initialize file storage for participants
-        FileStorage fileStorage = new FileStorage("participants.json");
+        FileStorage fileStorage = new FileStorage("participantsfile.json");
         if (!fileStorage.read().toString().contains(participantObj.toString())) {
             // Add participant if not already exists
             fileStorage.add(participantObj);
@@ -204,7 +204,7 @@ public class ServerController {
     // Method to confirm or reject registered participants
     private JSONObject confirm(JSONObject obj) throws IOException, SQLException, ClassNotFoundException {
         // Initialize file storage for participants
-        FileStorage fileStorage = new FileStorage("participants.json");
+        FileStorage fileStorage = new FileStorage("participantsfile.json");
 
         // Extract username from object
         String username = obj.getString("username");
@@ -250,7 +250,7 @@ public class ServerController {
         String registration_number = obj.getString("registration_number");
 
         // Initialize file storage for participants
-        FileStorage fileStorage = new FileStorage("participants.json");
+        FileStorage fileStorage = new FileStorage("participantsfile.json");
 
         // Filter participants by registration number
         String participants = fileStorage.filterParticipantsByRegNo(registration_number);
