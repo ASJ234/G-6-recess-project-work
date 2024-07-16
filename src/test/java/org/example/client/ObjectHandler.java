@@ -3,11 +3,11 @@ package org.example.client;
 import org.json.JSONObject;
 import java.util.Scanner;
 
-public class Serializer {
+public class ObjectHandler {
     User user;
 
     // Constructor to initialize the Serializer with a User object
-    public Serializer(User user) {
+    public ObjectHandler(User user) {
         this.user = user;
     }
 
@@ -154,7 +154,7 @@ public class Serializer {
 
     // Main method for testing
     public static void main(String[] args) {
-        Serializer sample = new Serializer(new User());
+        ObjectHandler sample = new ObjectHandler(new User());
 
         // Test serialize method with login command
         sample.serialize("login sossy asj@gmail.com");

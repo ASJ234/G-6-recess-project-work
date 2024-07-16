@@ -78,7 +78,7 @@ public class ClientInstance {
         ) {
             // Initialize client ID and serializer
             this.clientId = (String) socket.getInetAddress().getHostAddress();
-            Serializer serializer = new Serializer(this.user);
+            ObjectHandler objectHandler = new ObjectHandler(this.user);
 
             System.out.println();
             System.out.print("-------------------COMMANDS TO BE ENTERED---------------------------");
@@ -90,7 +90,7 @@ public class ClientInstance {
             System.out.print("[Enter the command] (" + this.user.username + "): ");
 
             // Continuously read from the console and send to the server
-            ClientController clientController = new ClientController(user);
+            ClientHandler clientHandler = new ClientHandler(user);
             String regex = "^\\{.*\\}$";
             Pattern pattern = Pattern.compile(regex);
 
@@ -105,7 +105,7 @@ public class ClientInstance {
                 }
 
                 // Serialize the user input command
-                String serializedCommand = serializer.serialize(userInput);
+                String serializedCommand = objectHandler.serialize(userInput);
 
                 // Check if the serialized command is valid
                 if (isValid(serializedCommand)) {
@@ -116,7 +116,7 @@ public class ClientInstance {
                     String response = input.readLine();
 
                     // Execute the response using the client controller
-                    this.user = clientController.exec(response);
+                    this.user = clientHandler.exec(response);
 
                     // Check if the user's output is a valid JSON object
                     if (!pattern.matcher(this.user.output).matches()) {
