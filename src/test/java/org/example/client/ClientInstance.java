@@ -100,7 +100,7 @@ public class ClientInstance {
                 if (userInput.equals("logout") && (this.user.isAuthenticated)) {
                     System.out.println("✓✓ Session successfully logged out");
                     this.user.logout();
-                    System.out.print("[Enter the command] (" + (!this.user.username.isBlank() ? this.user.username : null) + "): ");
+                    System.out.print("Enter the command [" + (!this.user.username.isBlank() ? this.user.username : null) + "]: ");
                     continue;
                 }
 
@@ -143,7 +143,7 @@ public class ClientInstance {
                     System.out.println(serializedCommand);
                 }
                 // Prompt for the next instruction
-                System.out.print("[Enter the command] (" + this.user.username + "): ");
+                System.out.print("Enter the command [" + this.user.username + "]: ");
             }
         } catch (Exception e) {
             e.printStackTrace();
