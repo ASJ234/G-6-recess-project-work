@@ -89,7 +89,7 @@ public class ClientHandler {
             stringBuilder.append("challenge id: " + challenge.get("id") + "\nchallenge name: " + challenge.getString("name") + "\ndifficulty: " + challenge.getString("difficulty") + "\nclosing date: " + challenge.getString("closing_date") + "\t\tduration: " + challenge.getInt("time_allocation") + "\n\n\n");
         }
 
-        stringBuilder.append("Attempt a particular challenge using the command:\n-> attemptChallenge <challenge_id>\n\n");
+        stringBuilder.append("Attempt a particular challenge using the command:\n- attemptChallenge challengeNumber\n\n");
 
         this.user.output = stringBuilder.toString();
 
@@ -127,8 +127,8 @@ public class ClientHandler {
         }
 
         stringBuilder.append("\nConfirm a participant using the commands below.\n");
-        stringBuilder.append(" - confirm yes <username>\n");
-        stringBuilder.append(" - confirm no <username>\n");
+        stringBuilder.append(" - confirm yes username\n");
+        stringBuilder.append(" - confirm no username\n");
 
         this.user.output = stringBuilder.toString();
 
