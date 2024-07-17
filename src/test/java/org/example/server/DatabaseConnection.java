@@ -87,7 +87,12 @@ public class DatabaseConnection {
 
     // Method to retrieve challenge questions from the database by challenge_id
     public ResultSet getChallengeQuestions(int challenge_id) throws SQLException {
-        String sql = "SELECT qar.* FROM `mtc_challenge_comp`.`question_answer_record` qar JOIN `mtc_challenge_comp`.`challenge_question_answer_record` cqar ON qar.question_id = cqar.question_id WHERE cqar.challenge_id = ?";
+        String sql = "SELECT qar.* FROM `mtc_challenge_comp`.`question_answer_record` qar " +
+                "JOIN `mtc_challenge_comp`.`challenge_question_answer_record` cqar " +
+                "ON qar.question_id = cqar.question_id " +
+                "WHERE cqar.challenge_id = ? " +
+                "ORDER BY RAND() " +
+                "LIMIT 10";
         PreparedStatement preparedStatement = this.connection.prepareStatement(sql);
         preparedStatement.setInt(1, challenge_id);
         return preparedStatement.executeQuery();
@@ -98,19 +103,30 @@ public class DatabaseConnection {
         int score = 0;
         for (int i = 0; i < attempt.length(); i++) {
             JSONObject obj = attempt.getJSONObject(i);
+            int questionId = obj.getInt("question_id");
+            String answer = obj.getString("answer");
 
-            if (obj.get("answer").equals("-")) {
-                score += 0;
-                continue;
+            if (answer.equals("-")) {
+                continue; // Skip to next question, no change in score
             }
 
-            String sql = "SELECT `score` FROM `question_answer_record` WHERE `question_id` = " + obj.getInt("question_id") + " AND `answer` = " + obj.get("answer") + ";";
-            ResultSet questionScore = this.statement.executeQuery(sql);
+            String sql = "SELECT `score`, `content` FROM `answers` WHERE `question_id` = ? AND `correct` = 1";
+            PreparedStatement preparedStatement = this.connection.prepareStatement(sql);
+            preparedStatement.setInt(1, questionId);
+            ResultSet correctAnswer = preparedStatement.executeQuery();
 
-            if (questionScore.next()) {
-                score += questionScore.getInt("score");
+            if (correctAnswer.next()) {
+                int questionScore = correctAnswer.getInt("score");
+                String correctContent = correctAnswer.getString("content");
+
+                if (answer.equals(correctContent)) {
+                    score += questionScore; // Correct answer, add full score
+                } else {
+                    score -= 3; // Wrong answer, deduct 3 marks
+                }
             } else {
-                score -= 3; // Penalize if answer not found (example handling)
+                // Handle case where no correct answer is found for the question
+                System.err.println("No correct answer found for question ID: " + questionId);
             }
         }
         return score;
