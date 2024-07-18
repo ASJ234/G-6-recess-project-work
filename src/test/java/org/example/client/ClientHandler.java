@@ -86,7 +86,7 @@ public class ClientHandler {
         stringBuilder.append("\nCHALLENGES \n\n");
         for (int i = 0; i < challenges.length(); i++) {
             JSONObject challenge = new JSONObject(((JSONObject) challenges.get(i)).toString(4));
-            stringBuilder.append("challenge id: " + challenge.get("id") + "\nchallenge name: " + challenge.getString("name") + "\ndifficulty: " + challenge.getString("difficulty") + "\nclosing date: " + challenge.getString("closing_date") + "\t\tduration: " + challenge.getInt("time_allocation") + "\n\n\n");
+            stringBuilder.append("challenge id: " + challenge.get("id") + "\nchallenge name: " + challenge.getString("name") + "\ndifficulty: " + challenge.getString("difficulty") + "\nclosing date: " + challenge.getString("closing_date") + "\t\tduration: " + challenge.getInt("time_allocation")  + " minutes" +"\n\n\n");
         }
 
         stringBuilder.append("Attempt a particular challenge using the command:\n- attemptChallenge challengeNumber\n\n");
