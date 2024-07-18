@@ -53,7 +53,7 @@ public class ServerController {
         }
 
         // Query school table for matching representative username and email
-        String readRepresentativeQuery = "SELECT * FROM schools";
+        String readRepresentativeQuery = "SELECT * FROM school";
         ResultSet representativeResultSet = dbConnection.read(readRepresentativeQuery);
         while (representativeResultSet.next()) {
             if (username.equals(representativeResultSet.getString("representative_name")) &&
@@ -104,6 +104,20 @@ public class ServerController {
         JSONObject clientResponse = new JSONObject();
         clientResponse.put("command", "register");
 
+        // Check if the participant has been rejected before
+        ResultSet rejectedParticipant = dbConnection.getRejectedParticipant(
+                participantObj.getString("username"),
+                participantObj.getString("emailAddress"),
+                participantObj.getString("registration_number")
+        );
+
+        if (rejectedParticipant.next()) {
+            // Participant has been rejected before
+            clientResponse.put("status", false);
+            clientResponse.put("reason", "You have been previously rejected from registering under this school. Registration denied.");
+            return clientResponse;
+        }
+
         // Query representative table to get representative email
         ResultSet rs = dbConnection.getRepresentative(participantObj.getString("registration_number"));
         String representativeEmail;
@@ -112,8 +126,7 @@ public class ServerController {
         } else {
             // If no representative found for given regNo
             clientResponse.put("status", false);
-            clientResponse.put("reason", "School does not exist in our database");
-
+            clientResponse.put("reason", "The school registration number does not match registered school numbers");
             return clientResponse;
         }
 
@@ -136,6 +149,8 @@ public class ServerController {
 
         return clientResponse;
     }
+
+
 
     // Method to handle attempting a challenge
     private JSONObject attemptChallenge(JSONObject obj) throws SQLException, ClassNotFoundException {
@@ -221,8 +236,9 @@ public class ServerController {
             return clientResponse;
         }
 
-        // Initialize database connection
+        // Initialize database connection and email agent
         DatabaseConnection dbConnection = new DatabaseConnection();
+        EmailSending emailAgent = new EmailSending();
 
         // Confirm or reject participant based on 'confirm' flag
         if (obj.getBoolean("confirm")) {
@@ -232,6 +248,14 @@ public class ServerController {
             fileStorage.deleteEntryByUserName(username);
             clientResponse.put("reason", participant.getString("firstname") + " " + participant.getString("lastname") +
                     " (" + participant.getString("emailAddress") + ") confirmed successfully");
+
+            // Send confirmation email
+            try {
+                emailAgent.sendConfirmedParticipantEmail(participant.getString("emailAddress"), participant.getString("username"));
+            } catch (MessagingException e) {
+                // Log the error, but don't stop the confirmation process
+                System.err.println("Failed to send confirmation email: " + e.getMessage());
+            }
         } else {
             dbConnection.createParticipantRejected(participant.getString("username"), participant.getString("firstname"),
                     participant.getString("lastname"), participant.getString("emailAddress"),
@@ -239,6 +263,14 @@ public class ServerController {
             fileStorage.deleteEntryByUserName(username);
             clientResponse.put("reason", participant.getString("firstname") + " " + participant.getString("lastname") +
                     " (" + participant.getString("emailAddress") + ") rejected successfully");
+
+            // Send rejection email
+            try {
+                emailAgent.sendRejectedParticipantEmail(participant.getString("emailAddress"), participant.getString("username"));
+            } catch (MessagingException e) {
+                // Log the error, but don't stop the rejection process
+                System.err.println("Failed to send rejection email: " + e.getMessage());
+            }
         }
         clientResponse.put("status", true);
         return clientResponse;

@@ -1,1 +1,20 @@
-[]
+[
+    {
+        "firstname": "allan",
+        "emailAddress": "ogenrwoth.frank@gmail.com",
+        "dob": "2002-11-29",
+        "registration_number": "0001",
+        "imagePath": "C:\\Users\\ogenr\\OneDrive\\Desktop\\edited.jpg",
+        "username": "mungumio",
+        "lastname": "fred"
+    },
+    {
+        "firstname": "jim",
+        "emailAddress": "frank@gmail.com",
+        "dob": "2000-10-11",
+        "registration_number": "0001",
+        "imagePath": "popo.jpg",
+        "username": "frank",
+        "lastname": "frank"
+    }
+]

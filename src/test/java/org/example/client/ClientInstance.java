@@ -87,7 +87,7 @@ public class ClientInstance {
             System.out.println("--------------------------------------------------------------------------");
 
             // Prompt user for a command
-            System.out.print("[Enter the command] (" + this.user.username + "): ");
+            System.out.print("Enter the command [" + this.user.username + "]: ");
 
             // Continuously read from the console and send to the server
             ClientHandler clientHandler = new ClientHandler(user);

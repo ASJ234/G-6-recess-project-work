@@ -46,7 +46,6 @@ public class ClientHandler {
         return this.user;
     }
 
-    // Method to handle challenge attempt logic based on server response
     private User attemptChallenge(JSONObject response) {
         // Get the list of questions from the response
         JSONArray questions = response.getJSONArray("questions");
@@ -57,16 +56,38 @@ public class ClientHandler {
             return this.user;
         }
 
-        // Build a string to display the questions
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("\nQUESTIONS \n\n");
-        for (int i = 0; i < questions.length(); i++) {
+        int totalQuestions = questions.length();
+        int timeAllocation = response.getInt("time_allocation"); // Assume this is in minutes
+        long startTime = System.currentTimeMillis();
+
+        StringBuilder outputBuilder = new StringBuilder();
+        outputBuilder.append("Challenge started. You have ").append(timeAllocation).append(" minutes to complete ")
+                .append(totalQuestions).append(" questions.\n\n");
+
+        for (int i = 0; i < totalQuestions; i++) {
             JSONObject question = new JSONObject(((JSONObject) questions.get(i)).toString(4));
-            stringBuilder.append(question.get("id") + ". " + question.getString("question") + "\n\n");
+
+            // Calculate remaining time
+            long currentTime = System.currentTimeMillis();
+            long elapsedTimeMinutes = (currentTime - startTime) / 60000;
+            long remainingTimeMinutes = Math.max(0, timeAllocation - elapsedTimeMinutes);
+
+            outputBuilder.append("Question ").append(i + 1).append(" of ").append(totalQuestions)
+                    .append(" | Remaining time: ").append(remainingTimeMinutes).append(" minutes\n\n");
+            outputBuilder.append(question.getString("id")).append(". ").append(question.getString("question")).append("\n\n");
+
+            // Here you would typically wait for user input before moving to the next question
+            // For demonstration, we'll just add a placeholder
+            outputBuilder.append("(Answer input would go here)\n\n");
+
+            // Check if time is up
+            if (remainingTimeMinutes <= 0) {
+                outputBuilder.append("Time's up! The challenge has ended.\n");
+                break;
+            }
         }
 
-        this.user.output = response.toString();
-
+        this.user.output = outputBuilder.toString();
         return this.user;
     }
 

@@ -57,7 +57,7 @@ public class EmailSending {
         emailMessage.append("\tUsername: ").append(username).append("\n");
         emailMessage.append("\tEmail: ").append(participantEmail).append("\n\n");
         emailMessage.append("To verify this participant, please login into the command line interface and confirm using the following commands:\n");
-        emailMessage.append("\tconfirm with:-> confirm yes/no ").append(username).append("\n");
+        emailMessage.append("\tconfirm with:- confirm yes/no ").append(username).append("\n");
 
         // Set email message text
         message.setText(emailMessage.toString());
@@ -65,4 +65,55 @@ public class EmailSending {
         // Send the email message
         Transport.send(message);
     }
+
+
+        // Method to send email to rejected participants
+        public void sendRejectedParticipantEmail(String to, String username) throws MessagingException {
+            MimeMessage message = new MimeMessage(this.session);
+
+            message.setFrom(new InternetAddress(this.from));
+            message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
+
+            message.setSubject("Registration Status: Not Approved");
+
+            StringBuilder emailMessage = new StringBuilder();
+            emailMessage.append("Dear ").append(username).append(",\n\n");
+            emailMessage.append("We regret to inform you that your registration for the mathematics challenge competition has not been approved.\n\n");
+            emailMessage.append("Your registration was reviewed by the school representative and was not confirmed at this time.\n\n");
+            emailMessage.append("If you believe this decision was made in error or if you have any questions, please contact your school representative for more information.\n\n");
+            emailMessage.append("Thank you for your interest in the mathematics challenge competition.\n\n");
+            emailMessage.append("Best regards,\nThe mathematics challenge competition Team");
+
+            message.setText(emailMessage.toString());
+
+            Transport.send(message);
+        }
+
+        // Method to send email to confirmed participants
+        public void sendConfirmedParticipantEmail(String to, String username) throws MessagingException {
+            MimeMessage message = new MimeMessage(this.session);
+
+            message.setFrom(new InternetAddress(this.from));
+            message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
+
+            message.setSubject("Registration Status: Approved");
+
+            StringBuilder emailMessage = new StringBuilder();
+            emailMessage.append("Dear ").append(username).append(",\n\n");
+            emailMessage.append("Congratulations! Your registration for the mathematics challenge competition has been approved.\n\n");
+            emailMessage.append("Your registration was reviewed and confirmed by the school representative. You are now officially registered as a participant.\n\n");
+            emailMessage.append("Next steps:\n");
+            emailMessage.append("1. Log in to the mathematics challenge competition platform through the command line interface using your registered credentials(username and email).\n");
+            emailMessage.append("2. Familiarize yourself with the available challenges and their requirements.\n");
+            emailMessage.append("3. Start participating in the challenges when they become available.\n\n");
+            emailMessage.append("If you have any questions or need assistance, please don't hesitate to contact our support team.\n\n");
+            emailMessage.append("We wish you the best of luck in the mathematics challenge competition!\n\n");
+            emailMessage.append("Best regards,\nThe mathematics challenge competition Team");
+
+            message.setText(emailMessage.toString());
+
+            Transport.send(message);
+        }
+
+
 }

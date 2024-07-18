@@ -106,7 +106,7 @@ public class DatabaseConnection {
             int questionId = obj.getInt("question_id");
             String answer = obj.getString("answer");
 
-            if (answer.equals("-")) {
+            if (answer.equals("->")) {
                 continue; // Skip to next question, no change in score
             }
 
@@ -119,7 +119,10 @@ public class DatabaseConnection {
                 int questionScore = correctAnswer.getInt("score");
                 String correctContent = correctAnswer.getString("content");
 
-                if (answer.equals(correctContent)) {
+                if (answer.equals("-") || answer.trim().isEmpty()) {
+                    // Participant is not sure, award 0 for this question
+                    // No change in score, effectively awarding 0
+                } else if (answer.equals(correctContent)) {
                     score += questionScore; // Correct answer, add full score
                 } else {
                     score -= 3; // Wrong answer, deduct 3 marks
@@ -146,7 +149,18 @@ public class DatabaseConnection {
 
     // Method to retrieve representative details from the database by regNo
     public ResultSet getRepresentative(String registration_number) throws SQLException {
-        String sqlCommand = "SELECT * FROM `schools` WHERE registration_number = " + registration_number + ";";
+        String sqlCommand = "SELECT * FROM `school` WHERE registration_number = " + registration_number + ";";
         return this.statement.executeQuery(sqlCommand);
     }
+
+    public ResultSet getRejectedParticipant(String username, String email, String registrationNumber) throws SQLException {
+        String query = "SELECT * FROM rejectedparticipant WHERE username = ? AND emailAddress = ? AND registration_number = ?";
+        PreparedStatement pstmt = connection.prepareStatement(query);
+        pstmt.setString(1, username);
+        pstmt.setString(2, email);
+        pstmt.setString(3, registrationNumber);
+        return pstmt.executeQuery();
+    }
+
+
 }
