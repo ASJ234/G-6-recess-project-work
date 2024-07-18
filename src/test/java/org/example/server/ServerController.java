@@ -166,6 +166,13 @@ public class ServerController {
         ResultSet challengeQuestions;
         challengeQuestions = dbConnection.getChallengeQuestions(challengeId);
 
+        // Get challenge details including time allocation
+        ResultSet challengeDetails = dbConnection.getChallengeDetails(challengeId);
+        int timeAllocation = 0;
+        if (challengeDetails.next()) {
+            timeAllocation = challengeDetails.getInt("time_allocation");
+        }
+
         // Iterate through challenge questions and add to client response
         while (challengeQuestions.next()) {
             JSONObject question = new JSONObject();
@@ -181,6 +188,7 @@ public class ServerController {
         clientResponse.put("questions", questions);
         clientResponse.put("challenge_id", challengeId);
         clientResponse.put("challenge_name", challengeId);
+        clientResponse.put("time_allocation", timeAllocation);  // Add time allocation to the response
         return clientResponse;
     }
 
@@ -297,23 +305,52 @@ public class ServerController {
 
     // Method to handle challenge attempt
     public JSONObject attempt(JSONObject obj) throws SQLException, ClassNotFoundException {
-        // Extract attempt details from object
         JSONArray attempt = obj.getJSONArray("attempt");
+        int challengeId = obj.getInt("challenge_id");
+        int participantId = obj.getInt("participant_id");
 
-        // Initialize database connection
         DatabaseConnection dbConnection = new DatabaseConnection();
 
-        // Prepare attempt evaluation JSON object
-        JSONObject attemptEvaluation = new JSONObject();
-        attemptEvaluation.put("score", dbConnection.getAttemptScore(attempt));
-        attemptEvaluation.put("participant_id", obj.getInt("participant_id"));
-        attemptEvaluation.put("challenge_id", obj.getInt("challenge_id"));
-        attemptEvaluation.put("total_score", obj.getInt("total_score"));
+        int totalScore = 0;
+        int score = 0;
+
+        for (int i = 0; i < attempt.length(); i++) {
+            JSONObject answerObj = attempt.getJSONObject(i);
+            int questionId = answerObj.getInt("question_id");
+            String answer = answerObj.getString("answer");
+
+            ResultSet correctAnswer = dbConnection.getCorrectAnswer(questionId);
+            if (correctAnswer.next()) {
+                int questionScore = correctAnswer.getInt("score");
+                String correctContent = correctAnswer.getString("content");
+
+                if (answer.equals("-")) {
+                    // Participant is not sure, award 0 for this question
+                    // No change in score
+                } else if (answer.equals(correctContent)) {
+                    // Correct answer, add full score
+                    score += questionScore;
+                } else {
+                    // Wrong answer, deduct 3 marks
+                    score -= 3;
+                }
+
+                totalScore += questionScore;
+            }
+        }
+
+        // Ensure score doesn't go below 0
+        score = Math.max(0, score);
 
         // Create challenge attempt in database
-        dbConnection.createChallengeAttempt(attemptEvaluation);
+        dbConnection.createChallengeAttempt(participantId, challengeId, score, totalScore);
 
-        return new JSONObject();
+        JSONObject response = new JSONObject();
+        response.put("command", "attemptResult");
+        response.put("score", score);
+        response.put("totalScore", totalScore);
+
+        return response;
     }
 
     // Main method to run appropriate logic based on command received

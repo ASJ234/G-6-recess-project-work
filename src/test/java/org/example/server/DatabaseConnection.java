@@ -99,52 +99,59 @@ public class DatabaseConnection {
     }
 
     // Method to calculate and retrieve attempt score from a JSONArray of attempts
-    public int getAttemptScore(JSONArray attempt) throws SQLException {
-        int score = 0;
-        for (int i = 0; i < attempt.length(); i++) {
-            JSONObject obj = attempt.getJSONObject(i);
-            int questionId = obj.getInt("question_id");
-            String answer = obj.getString("answer");
-
-            if (answer.equals("->")) {
-                continue; // Skip to next question, no change in score
-            }
-
-            String sql = "SELECT `score`, `content` FROM `answers` WHERE `question_id` = ? AND `correct` = 1";
-            PreparedStatement preparedStatement = this.connection.prepareStatement(sql);
-            preparedStatement.setInt(1, questionId);
-            ResultSet correctAnswer = preparedStatement.executeQuery();
-
-            if (correctAnswer.next()) {
-                int questionScore = correctAnswer.getInt("score");
-                String correctContent = correctAnswer.getString("content");
-
-                if (answer.equals("-") || answer.trim().isEmpty()) {
-                    // Participant is not sure, award 0 for this question
-                    // No change in score, effectively awarding 0
-                } else if (answer.equals(correctContent)) {
-                    score += questionScore; // Correct answer, add full score
-                } else {
-                    score -= 3; // Wrong answer, deduct 3 marks
-                }
-            } else {
-                // Handle case where no correct answer is found for the question
-                System.err.println("No correct answer found for question ID: " + questionId);
-            }
-        }
-        return score;
-    }
+//    public int getAttemptScore(JSONArray attempt) throws SQLException {
+//        int score = 0;
+//        for (int i = 0; i < attempt.length(); i++) {
+//            JSONObject obj = attempt.getJSONObject(i);
+//            int questionId = obj.getInt("question_id");
+//            String answer = obj.getString("answer");
+//
+//            if (answer.equals("-")) {
+//                continue; // Skip to next question, no change in score
+//            }
+//
+//            String sql = "SELECT `score`, `content` FROM `answers` WHERE `question_id` = ? AND `correct` = 1";
+//            PreparedStatement preparedStatement = this.connection.prepareStatement(sql);
+//            preparedStatement.setInt(1, questionId);
+//            ResultSet correctAnswer = preparedStatement.executeQuery();
+//
+//            if (correctAnswer.next()) {
+//                int questionScore = correctAnswer.getInt("score");
+//                String correctContent = correctAnswer.getString("content");
+//
+//                if (answer.equals("-") || answer.trim().isEmpty()) {
+//                    // Participant is not sure, award 0 for this question
+//                    // No change in score, effectively awarding 0
+//                } else if (answer.equals(correctContent)) {
+//                    score += questionScore; // Correct answer, add full score
+//                } else {
+//                    score -= 3; // Wrong answer, deduct 3 marks
+//                }
+//            } else {
+//                // Handle case where no correct answer is found for the question
+//                System.err.println("No correct answer found for question ID: " + questionId);
+//            }
+//        }
+//        return score;
+//    }
 
     // Method to create a challenge attempt entry in the database
-    public void createChallengeAttempt(JSONObject obj) throws SQLException {
-        String sql = "INSERT INTO `participant_challenge_attempt` (`participant_id`, `challenge_id`, `score`, `total`) VALUES (?, ?, ?, ?)";
-        try (PreparedStatement ps = this.connection.prepareStatement(sql)) {
-            ps.setInt(1, obj.getInt("participant_id"));
-            ps.setInt(2, obj.getInt("challenge_id"));
-            ps.setInt(3, obj.getInt("score"));
-            ps.setInt(4, obj.getInt("total_score"));
-            ps.executeUpdate();
-        }
+    public void createChallengeAttempt(int participantId, int challengeId, int score, int totalScore) throws SQLException {
+        String sql = "INSERT INTO challenge_attempts (participant_id, challenge_id, score, total_score) VALUES (?, ?, ?, ?)";
+        PreparedStatement pstmt = connection.prepareStatement(sql);
+        pstmt.setInt(1, participantId);
+        pstmt.setInt(2, challengeId);
+        pstmt.setInt(3, score);
+        pstmt.setInt(4, totalScore);
+        pstmt.executeUpdate();
+    }
+
+
+    public ResultSet getChallengeDetails(int challengeId) throws SQLException {
+        String sql = "SELECT * FROM challenge WHERE challenge_id = ?";
+        PreparedStatement pstmt = connection.prepareStatement(sql);
+        pstmt.setInt(1, challengeId);
+        return pstmt.executeQuery();
     }
 
     // Method to retrieve representative details from the database by regNo
@@ -159,6 +166,14 @@ public class DatabaseConnection {
         pstmt.setString(1, username);
         pstmt.setString(2, email);
         pstmt.setString(3, registrationNumber);
+        return pstmt.executeQuery();
+    }
+
+
+    public ResultSet getCorrectAnswer(int questionId) throws SQLException {
+        String sql = "SELECT score, content FROM answers WHERE question_id = ? AND correct = 1";
+        PreparedStatement pstmt = connection.prepareStatement(sql);
+        pstmt.setInt(1, questionId);
         return pstmt.executeQuery();
     }
 
