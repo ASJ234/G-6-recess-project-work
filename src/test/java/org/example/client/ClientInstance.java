@@ -7,6 +7,8 @@ import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 import java.util.regex.Pattern;
+import java.time.Duration;
+import java.time.Instant;
 
 public class ClientInstance {
     // Define attributes for the ClientInstance object
@@ -44,12 +46,23 @@ public class ClientInstance {
         JSONArray solutions = new JSONArray();
         this.cache = 0; // Reset cache
         int count = 1;
+        int totalQuestions = questions.length();
+        Instant startTime = Instant.now();
 
         // Iterate through each question
-        for (int i = 0; i < questions.length(); i++) {
+        for (int i = 0; i < totalQuestions; i++) {
             JSONObject question = questions.getJSONObject(i);
             JSONObject answer = new JSONObject();
             this.cache += (byte) question.getInt("score"); // Add question score to cache
+
+            // Calculate remaining questions and elapsed time
+            int remainingQuestions = totalQuestions - i - 1;
+            Instant currentTime = Instant.now();
+            Duration elapsedTime = Duration.between(startTime, currentTime);
+
+            // Display remaining questions and elapsed time
+            System.out.println("Remaining Questions: " + remainingQuestions);
+            System.out.println("Elapsed Time: " + elapsedTime.toMinutes() + " minutes");
 
             // Display question and score
             System.out.println(count + ". " + question.get("question") + " (" + question.get("score") + " Marks)");
@@ -82,8 +95,8 @@ public class ClientInstance {
 
             System.out.println();
             System.out.print("-------------------COMMANDS TO BE ENTERED---------------------------");
-            System.out.println("\nregister username firstname lastname email_address d0b(yyyy-mm-dd) RegNo image_path" +
-                    "\nlogin\nviewApplicants(confirm yes <username>/confirm no <username>)\nviewChallenges\nattemptChallenges(attemptChallenge <challengeNo>)\nlogout");
+            System.out.println("\nregister username firstname lastname email_address dob(yyyy-mm-dd) registration_number image_path" +
+                    "\nlogin\nviewApplicants(confirm yes username / confirm no username)\nviewChallenges\nattemptChallenges(attemptChallenge <challengeNo>)\nlogout");
             System.out.println("--------------------------------------------------------------------------");
 
             // Prompt user for a command
