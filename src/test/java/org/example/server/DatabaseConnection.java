@@ -98,42 +98,6 @@ public class DatabaseConnection {
         return preparedStatement.executeQuery();
     }
 
-    // Method to calculate and retrieve attempt score from a JSONArray of attempts
-//    public int getAttemptScore(JSONArray attempt) throws SQLException {
-//        int score = 0;
-//        for (int i = 0; i < attempt.length(); i++) {
-//            JSONObject obj = attempt.getJSONObject(i);
-//            int questionId = obj.getInt("question_id");
-//            String answer = obj.getString("answer");
-//
-//            if (answer.equals("-")) {
-//                continue; // Skip to next question, no change in score
-//            }
-//
-//            String sql = "SELECT `score`, `content` FROM `answers` WHERE `question_id` = ? AND `correct` = 1";
-//            PreparedStatement preparedStatement = this.connection.prepareStatement(sql);
-//            preparedStatement.setInt(1, questionId);
-//            ResultSet correctAnswer = preparedStatement.executeQuery();
-//
-//            if (correctAnswer.next()) {
-//                int questionScore = correctAnswer.getInt("score");
-//                String correctContent = correctAnswer.getString("content");
-//
-//                if (answer.equals("-") || answer.trim().isEmpty()) {
-//                    // Participant is not sure, award 0 for this question
-//                    // No change in score, effectively awarding 0
-//                } else if (answer.equals(correctContent)) {
-//                    score += questionScore; // Correct answer, add full score
-//                } else {
-//                    score -= 3; // Wrong answer, deduct 3 marks
-//                }
-//            } else {
-//                // Handle case where no correct answer is found for the question
-//                System.err.println("No correct answer found for question ID: " + questionId);
-//            }
-//        }
-//        return score;
-//    }
 
     // Method to create a challenge attempt entry in the database
     public void createChallengeAttempt(int participantId, int challengeId, int score, int totalScore) throws SQLException {

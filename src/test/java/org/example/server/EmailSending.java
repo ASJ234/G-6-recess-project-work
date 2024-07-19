@@ -10,9 +10,9 @@ public class EmailSending {
     String host = "smtp.gmail.com";
 
     // Gmail account credentials for sending emails
-    String username = "eelection3.portal@gmail.com";
-    String from = "eelection3.portal@gmail.com";
-    String password = "mngv mtyl wmzk exmi";
+    String username = "arikojoel3@gmail.com";
+    String from = "arikojoel3@gmail.com";
+    String password = "ywaz twyx iieb ojds";
     Session session;
 
     // Constructor to set up email session
