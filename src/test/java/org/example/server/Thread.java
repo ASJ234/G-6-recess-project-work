@@ -1,5 +1,6 @@
 package org.example.server;
 
+import com.itextpdf.text.DocumentException;
 import org.json.JSONObject;
 
 import javax.mail.MessagingException;
@@ -11,11 +12,11 @@ import java.net.Socket;
 import java.sql.SQLException;
 import java.util.regex.Pattern;
 
-public class ServerThread {
+public class Thread {
     private Socket socket;
 
     // Constructor to initialize ServerThread with a socket
-    public ServerThread(Socket socket) {
+    public Thread(Socket socket) {
         this.socket = socket;
     }
 
@@ -60,6 +61,10 @@ public class ServerThread {
             JSONObject clientRequest;
             // Continuously read and process client requests
             while ((clientRequest = this.readUserInput(input)) != null) {
+
+                Live live = new Live();
+                live.check();
+
                 System.out.println("Command received: " + clientRequest.toString());
 
                 // Create a ServerController instance to handle client request
@@ -75,8 +80,10 @@ public class ServerThread {
         } catch (IOException | SQLException | ClassNotFoundException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
+        } catch (DocumentException e) {
+            throw new RuntimeException(e);
         } finally {
-            // Close socket when done
+            // Close socket when done v
             socket.close();
         }
     }

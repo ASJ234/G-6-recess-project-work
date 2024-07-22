@@ -34,5 +34,14 @@
         "imagePath": "image.png",
         "username": "okello",
         "lastname": "melvin"
+    },
+    {
+        "firstname": "john",
+        "emailAddress": "joel@gmail.com",
+        "dob": "2000-11-11",
+        "registration_number": "0001",
+        "imagePath": "png.jpg",
+        "username": "garang",
+        "lastname": "j0el"
     }
 ]

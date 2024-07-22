@@ -349,6 +349,7 @@ public class ServerController {
         response.put("command", "attemptResult");
         response.put("score", score);
         response.put("totalScore", totalScore);
+        response.put("reason", "✓✓ Your marks have been recorded in our database a detailed report will be provided for you though your email once the challenge is done");
 
         return response;
     }

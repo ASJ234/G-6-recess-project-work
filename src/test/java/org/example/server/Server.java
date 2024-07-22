@@ -21,8 +21,8 @@ public class Server {
                 System.out.println("New client connection");
 
                 // Start a new thread to handle client communication
-                ServerThread serverThread = new ServerThread(sock);
-                serverThread.start();
+                Thread thread = new Thread(sock);
+                thread.start();
 
             }
 
