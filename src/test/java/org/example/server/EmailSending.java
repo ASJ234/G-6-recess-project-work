@@ -2,21 +2,8 @@ package org.example.server;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Properties;
-
-import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfWriter;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 
 
 
@@ -130,118 +117,6 @@ public class EmailSending {
             Transport.send(message);
         }
 
-
-
-
-    public void sendChallengeReportPDF(String challenge, String participant, String email, JSONArray questions) throws IOException, DocumentException, MessagingException {
-
-        String temporaryFilePath = "results.pdf";
-
-        Document document = new Document();
-        PdfWriter.getInstance(document, new FileOutputStream(temporaryFilePath));
-        document.open();
-
-        Font headingFont = new Font(Font.FontFamily.HELVETICA, 18, Font.BOLD);
-        Paragraph heading = new Paragraph(challenge + " performance report", headingFont);
-        heading.setAlignment(Element.ALIGN_CENTER);
-        document.add(heading);
-
-        document.add(new Paragraph("\n")); // Add some space
-
-        Font normalFont = new Font(Font.FontFamily.HELVETICA, 12, Font.NORMAL);
-        Paragraph welcome = new Paragraph("Dear " + participant + ",\n\n" +
-                "Thank you for participating in the " + challenge + " challenge. " +
-                "We appreciate your effort and dedication. Below you will find a summary of your performance.", normalFont);
-        welcome.setAlignment(Element.ALIGN_JUSTIFIED);
-        document.add(welcome);
-
-        document.add(new Paragraph("\n")); // Add some space before the table
-
-        Font tableFont = new Font(Font.FontFamily.HELVETICA, 16, Font.BOLD);
-        Paragraph tableHeading = new Paragraph("Questions attempted and there answers", tableFont);
-        tableHeading.setAlignment(Element.ALIGN_LEFT);
-        document.add(tableHeading);
-
-        document.add(new Paragraph("\n"));
-
-
-        PdfPTable table = new PdfPTable(4);
-        table.setWidthPercentage(100);
-
-        table.addCell(createCell("qn", true));
-        table.addCell(createCell("Question", true));
-        table.addCell(createCell("Answer", true));
-        table.addCell(createCell("Score", true));
-
-        for (int i = 0; i < questions.length(); i++) {
-            JSONObject qns = questions.getJSONObject(i);
-            addRow(table, (i + 1), qns.getString("question"), qns.getString("answer"), qns.getInt("score"));
-        }
-
-        document.add(table);
-        document.add(new Paragraph("\n")); // Add some space after the table
-
-        Paragraph closing = new Paragraph("We hope you found this challenge rewarding and educational. " +
-                "Keep up the great work, and we look forward to your participation in future challenges!", normalFont);
-        closing.setAlignment(Element.ALIGN_JUSTIFIED);
-        document.add(closing);
-
-        document.close();
-
-        Message message = new MimeMessage(this.session);
-
-        message.setFrom(new InternetAddress(this.from));
-        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email));
-
-        message.setSubject(challenge + " PDF performance report for " + participant);
-
-        BodyPart messageBodyPart = new MimeBodyPart();
-
-        String emailBody = "Dear " + participant + ",\n\n" +
-                "Thank you for participating in the \"" + challenge + "\" challenge. " +
-                "We hope you found it both engaging and educational.\n\n" +
-                "Attached to this email, you will find a PDF document containing a detailed report of the questions attempted. " +
-                "This report includes:\n\n" +
-                "- A list of all questions you answered\n" +
-                "- The correct answer to each question\n" +
-                "- The score received for each correct answer\n\n" +
-                "We encourage you to review this report to reflect on your performance and identify areas for future improvement. " +
-                "If you have any questions about your results or the challenge in general, please don't hesitate to reach out to us.\n\n" +
-                "Once again, thank you for your participation. We look forward to seeing you in future challenges!\n\n" +
-                "Best regards,\n" +
-                "The MATH CHALLENGE Team";
-
-        messageBodyPart.setText(emailBody);
-
-        MimeBodyPart attachmentPart = new MimeBodyPart();
-        attachmentPart.attachFile(new File(temporaryFilePath));
-
-        Multipart multipart = new MimeMultipart();
-        multipart.addBodyPart(messageBodyPart);
-        multipart.addBodyPart(attachmentPart);
-
-        message.setContent(multipart);
-
-        Transport.send(message);
-
-    }
-
-    private static PdfPCell createCell(String content, boolean isHeader) {
-        Font font = FontFactory.getFont(FontFactory.HELVETICA, 12, isHeader ? Font.BOLD : Font.NORMAL);
-
-        PdfPCell cell = new PdfPCell(new Phrase(content, font));
-        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-        cell.setPadding(5);
-
-        return cell;
-    }
-
-    private static void addRow(PdfPTable table, int qn, String question, String answer, int score) {
-        table.addCell(createCell(String.valueOf(qn), false));
-        table.addCell(createCell(question, false));
-        table.addCell(createCell(answer, false));
-        table.addCell(createCell(String.valueOf(score), false));
-    }
 
 
 }

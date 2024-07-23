@@ -7,7 +7,7 @@ import java.sql.*;
 
 public class DatabaseConnection {
     // Database connection parameters
-    String url = "jdbc:mysql://localhost:3306/mtc_challenge_comp";
+    String url = "jdbc:mysql://localhost:3306/mtc_challenge_comp20";
     String username = "root";
     String password = "";
     Connection connection;
@@ -51,7 +51,7 @@ public class DatabaseConnection {
 
     // Method to create a participant entry in the database
     public void createParticipant(String username, String firstname, String lastname, String emailAddress, String dob, String registration_number, String imagePath) throws SQLException {
-        String sql = "INSERT INTO `participant` (`username`, `firstname`, `lastname`, `emailAddress`, `dob`, `registration_number`, `imagePath`) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO `participants` (`username`, `firstname`, `lastname`, `emailAddress`, `dob`, `registration_number`, `imagePath`) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = this.connection.prepareStatement(sql)) {
             stmt.setString(1, username);
             stmt.setString(2, firstname);
@@ -81,27 +81,24 @@ public class DatabaseConnection {
 
     // Method to retrieve challenges from the database
     public ResultSet getChallenges() throws SQLException {
-        String sql = "SELECT * FROM `mtc_challenge_comp`.`challenge` WHERE `starting_date` <= CURRENT_DATE AND `closing_date` >= CURRENT_DATE;";
+        String sql = "SELECT * FROM `mtc_challenge_comp20`.`challenges` WHERE `starting_date` <= CURRENT_DATE AND `closing_date` >= CURRENT_DATE;";
         return this.statement.executeQuery(sql);
     }
 
     // Method to retrieve challenge questions from the database by challenge_id
     public ResultSet getChallengeQuestions(int challenge_id) throws SQLException {
-        String sql = "SELECT qar.* FROM `mtc_challenge_comp`.`question_answer_record` qar " +
-                "JOIN `mtc_challenge_comp`.`challenge_question_answer_record` cqar " +
-                "ON qar.question_id = cqar.question_id " +
-                "WHERE cqar.challenge_id = ? " +
+        String sql = "SELECT qar.* FROM `mtc_challenge_comp20`.`question_answer_records` qar "+
                 "ORDER BY RAND() " +
                 "LIMIT 10";
         PreparedStatement preparedStatement = this.connection.prepareStatement(sql);
-        preparedStatement.setInt(1, challenge_id);
+       // preparedStatement.setInt(1, challenge_id);
         return preparedStatement.executeQuery();
     }
 
 
     // Method to create a challenge attempt entry in the database
     public void createChallengeAttempt(int participantId, int challengeId, int score, int totalScore) throws SQLException {
-        String sql = "INSERT INTO challenge_attempts (participant_id, challenge_id, score, total_score) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO participant_challenge_attempts (participant_id, challenge_id, score, total_score) VALUES (?, ?, ?, ?)";
         PreparedStatement pstmt = connection.prepareStatement(sql);
         pstmt.setInt(1, participantId);
         pstmt.setInt(2, challengeId);
@@ -111,8 +108,20 @@ public class DatabaseConnection {
     }
 
 
+
+//Method to create Challeng_Attempt table for population
+    public void ChallengeAttempt(int participantId, int challengeId, int questionId) throws SQLException {
+        String sql = "INSERT INTO attempts (participant_id, challenge_id, question_id) VALUES (?, ?, ?)";
+        PreparedStatement pstmt = connection.prepareStatement(sql);
+        pstmt.setInt(1, participantId);
+        pstmt.setInt(2, challengeId);
+        pstmt.setInt(3, questionId);
+        pstmt.executeUpdate();
+    }
+
+
     public ResultSet getChallengeDetails(int challengeId) throws SQLException {
-        String sql = "SELECT * FROM challenge WHERE challenge_id = ?";
+        String sql = "SELECT * FROM challenges WHERE challenge_id = ?";
         PreparedStatement pstmt = connection.prepareStatement(sql);
         pstmt.setInt(1, challengeId);
         return pstmt.executeQuery();
@@ -120,7 +129,7 @@ public class DatabaseConnection {
 
     // Method to retrieve representative details from the database by regNo
     public ResultSet getRepresentative(String registration_number) throws SQLException {
-        String sqlCommand = "SELECT * FROM `school` WHERE registration_number = " + registration_number + ";";
+        String sqlCommand = "SELECT * FROM `schools` WHERE registration_number = " + registration_number + ";";
         return this.statement.executeQuery(sqlCommand);
     }
 
@@ -135,7 +144,7 @@ public class DatabaseConnection {
 
 
     public ResultSet getCorrectAnswer(int questionId) throws SQLException {
-        String sql = "SELECT score, content FROM answers WHERE question_id = ? AND correct = 1";
+        String sql = "SELECT score, answer FROM question_answer_records WHERE question_id = ? ";
         PreparedStatement pstmt = connection.prepareStatement(sql);
         pstmt.setInt(1, questionId);
         return pstmt.executeQuery();

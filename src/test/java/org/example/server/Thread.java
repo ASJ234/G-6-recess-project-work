@@ -62,9 +62,6 @@ public class Thread {
             // Continuously read and process client requests
             while ((clientRequest = this.readUserInput(input)) != null) {
 
-                Live live = new Live();
-                live.check();
-
                 System.out.println("Command received: " + clientRequest.toString());
 
                 // Create a ServerController instance to handle client request
@@ -79,8 +76,6 @@ public class Thread {
 
         } catch (IOException | SQLException | ClassNotFoundException e) {
             e.printStackTrace();
-            throw new RuntimeException(e);
-        } catch (DocumentException e) {
             throw new RuntimeException(e);
         } finally {
             // Close socket when done v

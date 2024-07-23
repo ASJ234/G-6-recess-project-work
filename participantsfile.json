@@ -1,23 +1,5 @@
 [
     {
-        "firstname": "allan",
-        "emailAddress": "ogenrwoth.frank@gmail.com",
-        "dob": "2002-11-29",
-        "registration_number": "0001",
-        "imagePath": "C:\\Users\\ogenr\\OneDrive\\Desktop\\edited.jpg",
-        "username": "mungumio",
-        "lastname": "fred"
-    },
-    {
-        "firstname": "jim",
-        "emailAddress": "frank@gmail.com",
-        "dob": "2000-10-11",
-        "registration_number": "0001",
-        "imagePath": "popo.jpg",
-        "username": "frank",
-        "lastname": "frank"
-    },
-    {
         "firstname": "khot",
         "emailAddress": "melvin@gmail.com",
         "dob": "1990-12-10",
@@ -34,14 +16,5 @@
         "imagePath": "image.png",
         "username": "okello",
         "lastname": "melvin"
-    },
-    {
-        "firstname": "john",
-        "emailAddress": "joel@gmail.com",
-        "dob": "2000-11-11",
-        "registration_number": "0001",
-        "imagePath": "png.jpg",
-        "username": "garang",
-        "lastname": "j0el"
     }
 ]

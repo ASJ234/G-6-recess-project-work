@@ -32,7 +32,7 @@ public class ServerController {
         clientResponse.put("email", email);
 
         // Query participant table for matching username and email
-        String readParticipantQuery = "SELECT * FROM participant";
+        String readParticipantQuery = "SELECT * FROM participants";
         ResultSet participantResultSet = dbConnection.read(readParticipantQuery);
         while (participantResultSet.next()) {
             if (username.equals(participantResultSet.getString("username")) &&
@@ -53,7 +53,7 @@ public class ServerController {
         }
 
         // Query school table for matching representative username and email
-        String readRepresentativeQuery = "SELECT * FROM school";
+        String readRepresentativeQuery = "SELECT * FROM schools";
         ResultSet representativeResultSet = dbConnection.read(readRepresentativeQuery);
         while (representativeResultSet.next()) {
             if (username.equals(representativeResultSet.getString("representative_name")) &&
@@ -170,7 +170,7 @@ public class ServerController {
         ResultSet challengeDetails = dbConnection.getChallengeDetails(challengeId);
         int timeAllocation = 0;
         if (challengeDetails.next()) {
-            timeAllocation = challengeDetails.getInt("time_allocation");
+            timeAllocation = challengeDetails.getInt("duration_minutes");
         }
 
         // Iterate through challenge questions and add to client response
@@ -208,9 +208,9 @@ public class ServerController {
         while (availableChallenges.next()) {
             JSONObject challenge = new JSONObject();
             challenge.put("id", availableChallenges.getInt("challenge_id"));
-            challenge.put("name", availableChallenges.getString("challenge_name"));
-            challenge.put("difficulty", availableChallenges.getString("difficulty"));
-            challenge.put("time_allocation", availableChallenges.getInt("time_allocation"));
+            challenge.put("name", availableChallenges.getString("title"));
+            challenge.put("difficulty", availableChallenges.getString("description"));
+            challenge.put("time_allocation", availableChallenges.getInt("duration_minutes"));
             challenge.put("starting_date", availableChallenges.getDate("starting_date"));
             challenge.put("closing_date", availableChallenges.getDate("closing_date"));
 
@@ -314,15 +314,19 @@ public class ServerController {
         int totalScore = 0;
         int score = 0;
 
+        int questionId = 0;
         for (int i = 0; i < attempt.length(); i++) {
             JSONObject answerObj = attempt.getJSONObject(i);
-            int questionId = answerObj.getInt("question_id");
+            questionId = answerObj.getInt("question_id");
             String answer = answerObj.getString("answer");
 
             ResultSet correctAnswer = dbConnection.getCorrectAnswer(questionId);
+
+            dbConnection.ChallengeAttempt(participantId, challengeId, questionId);
+
             if (correctAnswer.next()) {
                 int questionScore = correctAnswer.getInt("score");
-                String correctContent = correctAnswer.getString("content");
+                String correctContent = correctAnswer.getString("answer");
 
                 if (answer.equals("-")) {
                     // Participant is not sure, award 0 for this question
@@ -344,6 +348,7 @@ public class ServerController {
 
         // Create challenge attempt in database
         dbConnection.createChallengeAttempt(participantId, challengeId, score, totalScore);
+
 
         JSONObject response = new JSONObject();
         response.put("command", "attemptResult");
