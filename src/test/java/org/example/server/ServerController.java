@@ -41,7 +41,7 @@ public class ServerController {
                 String registration_number = participantResultSet.getString("registration_number");
 
                 // Populate client response for participant
-                clientResponse.put("participant_id", participantResultSet.getInt("participant_id"));
+                clientResponse.put("participant_id", participantResultSet.getInt("id"));
                 clientResponse.put("registration_number", registration_number);
                 clientResponse.put("schoolName", "undefined");
                 clientResponse.put("isStudent", true);
@@ -176,7 +176,7 @@ public class ServerController {
         // Iterate through challenge questions and add to client response
         while (challengeQuestions.next()) {
             JSONObject question = new JSONObject();
-            question.put("id", challengeQuestions.getString("question_id"));
+            question.put("id", challengeQuestions.getString("id"));
             question.put("question", challengeQuestions.getString("question"));
             question.put("score", challengeQuestions.getString("score"));
 
@@ -207,7 +207,7 @@ public class ServerController {
         // Iterate through available challenges and add to client response
         while (availableChallenges.next()) {
             JSONObject challenge = new JSONObject();
-            challenge.put("id", availableChallenges.getInt("challenge_id"));
+            challenge.put("id", availableChallenges.getInt("id"));
             challenge.put("name", availableChallenges.getString("title"));
             challenge.put("difficulty", availableChallenges.getString("description"));
             challenge.put("time_allocation", availableChallenges.getInt("duration_minutes"));
@@ -314,15 +314,13 @@ public class ServerController {
         int totalScore = 0;
         int score = 0;
 
-        int questionId = 0;
         for (int i = 0; i < attempt.length(); i++) {
             JSONObject answerObj = attempt.getJSONObject(i);
-            questionId = answerObj.getInt("question_id");
+            int questionId = answerObj.getInt("question_id");
             String answer = answerObj.getString("answer");
 
             ResultSet correctAnswer = dbConnection.getCorrectAnswer(questionId);
-
-            dbConnection.ChallengeAttempt(participantId, challengeId, questionId);
+            boolean is_correct = false;
 
             if (correctAnswer.next()) {
                 int questionScore = correctAnswer.getInt("score");
@@ -331,15 +329,19 @@ public class ServerController {
                 if (answer.equals("-")) {
                     // Participant is not sure, award 0 for this question
                     // No change in score
+                    is_correct = false;
                 } else if (answer.equals(correctContent)) {
                     // Correct answer, add full score
                     score += questionScore;
+                    is_correct = true;
                 } else {
                     // Wrong answer, deduct 3 marks
                     score -= 3;
+                    is_correct = false;
                 }
 
                 totalScore += questionScore;
+                dbConnection.ChallengeAttempt(participantId, challengeId, questionId, is_correct);
             }
         }
 
@@ -349,15 +351,15 @@ public class ServerController {
         // Create challenge attempt in database
         dbConnection.createChallengeAttempt(participantId, challengeId, score, totalScore);
 
-
         JSONObject response = new JSONObject();
         response.put("command", "attemptResult");
         response.put("score", score);
         response.put("totalScore", totalScore);
-        response.put("reason", "✓✓ Your marks have been recorded in our database a detailed report will be provided for you though your email once the challenge is done");
+        response.put("reason", "✓✓ Your marks have been recorded in our database a detailed report will be provided for you through your email once the challenge is done");
 
         return response;
     }
+
 
     // Main method to run appropriate logic based on command received
     public JSONObject run() throws IOException, SQLException, ClassNotFoundException, MessagingException {

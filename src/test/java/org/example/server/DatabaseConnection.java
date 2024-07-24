@@ -87,9 +87,12 @@ public class DatabaseConnection {
 
     // Method to retrieve challenge questions from the database by challenge_id
     public ResultSet getChallengeQuestions(int challenge_id) throws SQLException {
-        String sql = "SELECT qar.* FROM `mtc_challenge_comp20`.`question_answer_records` qar "+
+        String sql = "SELECT q.id, q.question, a.answer, a.score " +
+                "FROM `mtc_challenge_comp20`.`answers` a " +
+                "JOIN `mtc_challenge_comp20`.`questions` q ON a.question_id = q.id " +
                 "ORDER BY RAND() " +
                 "LIMIT 10";
+
         PreparedStatement preparedStatement = this.connection.prepareStatement(sql);
        // preparedStatement.setInt(1, challenge_id);
         return preparedStatement.executeQuery();
@@ -98,39 +101,53 @@ public class DatabaseConnection {
 
     // Method to create a challenge attempt entry in the database
     public void createChallengeAttempt(int participantId, int challengeId, int score, int totalScore) throws SQLException {
-        String sql = "INSERT INTO participant_challenge_attempts (participant_id, challenge_id, score, total_score) VALUES (?, ?, ?, ?)";
-        PreparedStatement pstmt = connection.prepareStatement(sql);
-        pstmt.setInt(1, participantId);
-        pstmt.setInt(2, challengeId);
-        pstmt.setInt(3, score);
-        pstmt.setInt(4, totalScore);
-        pstmt.executeUpdate();
+        // SQL query with created_at and updated_at columns
+        String sql = "INSERT INTO participant_challenge_attempts (participant_id, challenge_id, score, total_score, created_at, updated_at) " +
+                "VALUES (?, ?, ?, ?, NOW(), NOW())";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, participantId);
+            pstmt.setInt(2, challengeId);
+            pstmt.setInt(3, score);
+            pstmt.setInt(4, totalScore);
+            // Setting current timestamp for created_at and updated_at
+            pstmt.executeUpdate();
+        }
     }
 
 
 
-//Method to create Challeng_Attempt table for population
-    public void ChallengeAttempt(int participantId, int challengeId, int questionId) throws SQLException {
-        String sql = "INSERT INTO attempts (participant_id, challenge_id, question_id) VALUES (?, ?, ?)";
-        PreparedStatement pstmt = connection.prepareStatement(sql);
+
+    //Method to create Challenge_Attempt table for population
+public void ChallengeAttempt(int participantId, int challengeId, int questionId, boolean is_correct) throws SQLException {
+    // SQL query with created_at and updated_at columns
+    String sql = "INSERT INTO attempts (participant_id, challenge_id, question_id, is_correct, created_at, updated_at) " +
+            "VALUES (?, ?, ?, ?, NOW(), NOW())";
+    try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
         pstmt.setInt(1, participantId);
         pstmt.setInt(2, challengeId);
         pstmt.setInt(3, questionId);
+        pstmt.setBoolean(4, is_correct);
+        // Setting current timestamp for created_at and updated_at
         pstmt.executeUpdate();
     }
+}
+
 
 
     public ResultSet getChallengeDetails(int challengeId) throws SQLException {
-        String sql = "SELECT * FROM challenges WHERE challenge_id = ?";
+        String sql = "SELECT * FROM challenges WHERE id = ?";
         PreparedStatement pstmt = connection.prepareStatement(sql);
         pstmt.setInt(1, challengeId);
         return pstmt.executeQuery();
     }
 
     // Method to retrieve representative details from the database by regNo
+// Corrected getRepresentative method using PreparedStatement
     public ResultSet getRepresentative(String registration_number) throws SQLException {
-        String sqlCommand = "SELECT * FROM `schools` WHERE registration_number = " + registration_number + ";";
-        return this.statement.executeQuery(sqlCommand);
+        String query = "SELECT * FROM schools WHERE registration_number = ?";
+        PreparedStatement preparedStatement = connection.prepareStatement(query);
+        preparedStatement.setString(1, registration_number);
+        return preparedStatement.executeQuery();
     }
 
     public ResultSet getRejectedParticipant(String username, String email, String registrationNumber) throws SQLException {
@@ -144,7 +161,7 @@ public class DatabaseConnection {
 
 
     public ResultSet getCorrectAnswer(int questionId) throws SQLException {
-        String sql = "SELECT score, answer FROM question_answer_records WHERE question_id = ? ";
+        String sql = "SELECT score, answer FROM answers WHERE question_id = ? ";
         PreparedStatement pstmt = connection.prepareStatement(sql);
         pstmt.setInt(1, questionId);
         return pstmt.executeQuery();
