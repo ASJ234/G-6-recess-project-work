@@ -272,9 +272,11 @@ public class ServerController {
                 System.err.println("Failed to send confirmation email: " + e.getMessage());
             }
         } else {
+
+            String picPath="user.jpg";
             dbConnection.createParticipantRejected(participant.getString("username"), participant.getString("firstname"),
                     participant.getString("lastname"), participant.getString("emailAddress"),
-                    participant.getString("dob"), participant.getString("registration_number"));
+                    participant.getString("dob"), participant.getString("registration_number"),"rejected_participants/"+picPath);
             fileStorage.deleteEntryByUserName(username);
             clientResponse.put("reason", participant.getString("firstname") + " " + participant.getString("lastname") +
                     " [" + participant.getString("emailAddress") + "] rejected successfully");
