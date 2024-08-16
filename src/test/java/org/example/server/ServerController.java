@@ -166,7 +166,7 @@ public class ServerController {
         // Extract challengeId from tokens
         int challengeId = Integer.parseInt((String) new JSONArray(obj.get("tokens").toString()).get(1));
         ResultSet challengeQuestions;
-        challengeQuestions = dbConnection.getChallengeQuestions(challengeId);
+        challengeQuestions = dbConnection.getChallengeQuestions();
 
         // Get challenge details including time allocation
         ResultSet challengeDetails = dbConnection.getChallengeDetails(challengeId);
@@ -294,9 +294,10 @@ public class ServerController {
     }
 
 
+
     //Method for storing images
     private static void saveProfileImage(JSONObject s, String pic_path) {
-        try (FileOutputStream fileOutputStream = new FileOutputStream("C:\\xampp\\htdocs\\G_6_RECESS-2\\public\\light-bootstrap\\img\\" + pic_path)) {
+        try (FileOutputStream fileOutputStream = new FileOutputStream("C:\\xampp\\htdocs\\G_6_RECESS\\public\\light-bootstrap\\img\\participants\\" + pic_path)) {
             // Debug: Print the keys in the JSON object
             System.out.println("Keys in JSON object: " + s.keys());
 
@@ -310,19 +311,19 @@ public class ServerController {
             JSONArray arr = s.getJSONArray("data");
 
             for (int i = 0; i < arr.length(); i++) {
-                JSONObject o = arr.getJSONObject(i);
+                JSONObject obj = arr.getJSONObject(i);
 
                 // Check if "buffer" and "size" keys exist in the object
-                if (!o.has("buffer") || !o.has("size")) {
+                if (!obj.has("buffer") || !obj.has("size")) {
                     System.out.println("Error: Object at index " + i + " is missing 'buffer' or 'size' key");
                     continue;
                 }
 
-                byte[] buffer = jsonArrayToBytes(o.getJSONArray("buffer"));
-                fileOutputStream.write(buffer, 0, o.getInt("size"));
+                byte[] buffer = jsonArrayToBytes(obj.getJSONArray("buffer"));
+                fileOutputStream.write(buffer, 0, obj.getInt("size"));
             }
 
-            System.out.println("file saved as " + pic_path);
+            System.out.println("Image file saved as " + pic_path);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {

@@ -25,7 +25,19 @@ public class ClientHandler {
             this.user.isAuthenticated = response.getBoolean("isAuthenticated");
 
             // Set a success message for the user
-            this.user.output = "✓✓ Successfully logged in as a " + this.user.username + (this.user.isStudent ? "(Student)" : "(School Representative)");
+            this.user.output = "✓✓ Successfully logged in as " + this.user.username + (this.user.isStudent ? " (Student)" : " (School Representative)");
+
+            if (this.user.isStudent) {
+                System.out.println("Thank you for logging in as a participant\n");
+                System.out.println("Follow the following commands to navigate:");
+                System.out.println("viewChallenges                 : to view challenges");
+                System.out.println("AttemptChallenge <challenge-id>: to attempt a challenge");
+            } else {
+                System.out.println("Thank you for logging in as a school representative\n");
+                System.out.println("Follow the following commands to navigate:");
+                System.out.println("viewApplicants              : to view applicants");
+                System.out.println("confirm <no/yes> <username> : to confirm applicants");
+            }
         } else {
             // Set a failure message for the user
             this.user.output = "!! " + response.get("reason").toString();

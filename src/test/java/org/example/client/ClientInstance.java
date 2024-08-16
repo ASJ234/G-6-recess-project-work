@@ -150,6 +150,8 @@ public class ClientInstance {
                         // Send the answers to the server
                         String inp = obj.toString();
                         output.println(inp);
+
+                        response = input.readLine();
                     }
                 } else {
                     // Print invalid serialized command

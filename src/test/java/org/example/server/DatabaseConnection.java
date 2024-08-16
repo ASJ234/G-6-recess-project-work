@@ -86,7 +86,7 @@ public class DatabaseConnection {
     }
 
     // Method to retrieve challenge questions from the database by challenge_id
-    public ResultSet getChallengeQuestions(int challenge_id) throws SQLException {
+    public ResultSet getChallengeQuestions() throws SQLException {
         String sql = "SELECT q.id, q.question, a.answer, a.score " +
                 "FROM `mtc_challenge_comp20`.`answers` a " +
                 "JOIN `mtc_challenge_comp20`.`questions` q ON a.question_id = q.id " +
